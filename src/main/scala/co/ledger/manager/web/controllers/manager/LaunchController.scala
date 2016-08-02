@@ -1,9 +1,15 @@
 package co.ledger.manager.web.controllers.manager
 
-import biz.enef.angulate.Controller
+import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.Module.RichModule
 import co.ledger.manager.web.controllers.WindowController
-import co.ledger.manager.web.services.WindowService
+import co.ledger.manager.web.services.{DeviceService, WindowService}
+import co.ledger.wallet.core.device.{Device, DeviceFactory}
+import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
+import co.ledger.wallet.core.device.ethereum.LedgerApi
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.util.{Failure, Success}
 
 /**
   *
@@ -35,8 +41,52 @@ import co.ledger.manager.web.services.WindowService
   * SOFTWARE.
   *
   */
-class LaunchController(val windowService: WindowService) extends Controller with ManagerController {
+class LaunchController(val windowService: WindowService,
+                       deviceService: DeviceService,
+                       $scope: Scope) extends Controller with ManagerController {
 
+  private var _scanRequest: Option[ScanRequest] = None
+
+  def startDeviceDiscovery(): Unit = {
+    if (_scanRequest.isEmpty) {
+      _scanRequest = Option(deviceService.requestScan())
+      _scanRequest.get.onScanUpdate {
+        case DeviceDiscovered(device) =>
+          if (_scanRequest.isDefined) {
+            connectDevice(device)
+            _scanRequest.get.stop()
+            _scanRequest = None
+          }
+        case DeviceLost(device) =>
+      }
+      _scanRequest.get.duration = DeviceFactory.InfiniteScanDuration
+      _scanRequest.get.start()
+    }
+  }
+
+  def connectDevice(device: Device): Unit = {
+    device.connect() flatMap {(_) =>
+      LedgerApi(device).getFirmwareVersion()
+    } onComplete {
+      case Success(_) =>
+        println("Let's go")
+      case Failure(ex) =>
+        startDeviceDiscovery()
+    }
+  }
+
+  def stopDeviceDiscovery(): Unit = {
+    _scanRequest foreach {(r) =>
+      r.stop()
+      _scanRequest = None
+    }
+  }
+
+  $scope.$on("$destroy", {() =>
+    stopDeviceDiscovery()
+  })
+
+  startDeviceDiscovery()
 }
 
 object LaunchController {

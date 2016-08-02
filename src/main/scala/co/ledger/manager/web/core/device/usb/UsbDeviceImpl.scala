@@ -44,6 +44,17 @@ import scala.scalajs.js
   */
 class UsbDeviceImpl(deviceInfo: HidDeviceInfo) extends Device {
   private val chrome = js.Dynamic.global.chrome
+
+  private var _connectionPromise: Option[Promise[UsbDeviceImpl.Connection]] = None
+  private var _exchanger: Option[UsbExchangePerformer] = None
+  private val _emitter: EventEmitter = new JsEventEmitter
+  private var _debug = false
+  private val _callback: js.Function = {(deviceId: Int) =>
+    if (deviceId == deviceInfo.deviceId) {
+      disconnect()
+    }
+  }
+
   override def connect(): Future[Device] = {
     _connectionPromise.getOrElse({
       _connectionPromise = Option(Promise())
@@ -74,7 +85,9 @@ class UsbDeviceImpl(deviceInfo: HidDeviceInfo) extends Device {
 
   override def isDebugEnabled: Boolean = _debug
 
-  override def readyForExchange: Future[Unit] = _exchanger.map(_.readyForExchange).getOrElse(Future.failed(new Exception("Not connected yet")))
+  override def readyForExchange: Future[Unit] = {
+    _exchanger.map(_.readyForExchange).getOrElse(Future.failed(new Exception("Not connected yet")))
+  }
 
   override def isExchanging: Boolean = _exchanger.exists(_.isExchanging)
 
@@ -101,15 +114,6 @@ class UsbDeviceImpl(deviceInfo: HidDeviceInfo) extends Device {
 
   override def isConnecting: Boolean = _connectionPromise.exists(!_.isCompleted)
 
-  private var _connectionPromise: Option[Promise[UsbDeviceImpl.Connection]] = None
-  private var _exchanger: Option[UsbExchangePerformer] = None
-  private val _emitter: EventEmitter = new JsEventEmitter
-  private var _debug = false
-  private val _callback: js.Function = {(deviceId: Int) =>
-    if (deviceId == deviceInfo.deviceId) {
-      disconnect()
-    }
-  }
 }
 
 object UsbDeviceImpl {

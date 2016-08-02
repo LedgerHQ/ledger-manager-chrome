@@ -10,6 +10,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
+import scala.scalajs.js.UndefOr
 import scala.util.{Failure, Success}
 
 /**
@@ -116,7 +117,7 @@ class UsbHidExchangePerformer(connection: UsbDeviceImpl.Connection,
   private def receive(): Future[Array[Byte]] = {
     import scala.scalajs.js.typedarray._
     val promise = Promise[Array[Byte]]()
-    chrome.hid.receive(connection.connectionId, {(reportId: Int, data: TypedArray[_, _]) =>
+    chrome.hid.receive(connection.connectionId, {(reportId: UndefOr[Int], data: TypedArray[_, _]) =>
       if (js.isUndefined(chrome.runtime.lastError))
         promise.success(int8Array2ByteArray(new Int8Array(data)))
       else

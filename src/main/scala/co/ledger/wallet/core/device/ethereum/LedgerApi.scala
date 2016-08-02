@@ -45,6 +45,7 @@ class LedgerApi(override val device: Device)
   override implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   val uuid = UUID.randomUUID()
+  device.uuid = uuid
 }
 
 object LedgerApi {
