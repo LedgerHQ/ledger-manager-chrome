@@ -1,0 +1,211 @@
+@import (reference) "constants";
+@import (reference) "global";
+
+.wallet-view {
+  padding: @metrics-large-padding @metrics-medium-padding;
+  height: 100%;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+
+  .spacer {
+    flex-grow: 1;
+  }
+
+  .no-top-margin {
+    margin-top: 0px;
+  }
+
+  section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    margin-top: @metrics-almost-very-large-padding;
+
+    &.fullsize {
+      flex-grow: 1;
+    }
+
+    &:first-child {
+      margin-top: 0px;
+    }
+
+    &.centered-content {
+      > div:nth-child(2) {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+      }
+    }
+
+    > header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0px;
+
+      > h1 {
+        .uppercase-section-title;
+        margin-right: @metrics-very-small-padding;
+      }
+
+      a.uppercase-action {
+        margin-left: auto;
+      }
+    }
+
+    table {
+      width: 100%;
+      vertical-align: middle;
+
+      thead tr td {
+        .uppercase-section-column;
+        border-bottom: 1px solid transparent;
+        padding-top: @metrics-almost-medium-padding;
+        padding-bottom: 6px;
+      }
+
+      tbody tr td {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        vertical-align: middle;
+        padding-right: @metrics-large-padding;
+        border-bottom: 1px solid @color-very-light-grey;
+
+        &.row-title {
+          .uppercase-section-column;
+          &.top-aligned {
+            vertical-align: top;
+          }
+          &.optional {
+            color: @color-dark-grey;
+          }
+        }
+
+        .light-indicator {
+          border: 1px solid @color-soft-grey;
+          margin-left: 3px;
+          border-radius: @border-radius-default-value;
+          .regular-grey-text-small;
+          padding: 0 3px;
+        }
+      }
+
+      tbody tr #balanceRow {
+        padding-top: 0px;
+        padding-bottom: 0px;
+      }
+
+      tbody tr[ng-click] {
+        &:hover {
+          background-color: @color-extra-light-grey;
+        }
+      }
+
+      tr.no-border td {
+        border-bottom: 0px solid transparent;
+      }
+
+      tr td.fit-content {
+        width: 1%;
+        white-space: nowrap;
+      }
+
+      tr td.center {
+        text-align: center;
+      }
+
+      tr td.align-right {
+        text-align: right;
+      }
+
+      tr td.stretch-content {
+        width: 100%;
+        white-space: nowrap;
+      }
+
+      tr td:last-child {
+        padding-right: 0px;
+      }
+
+      &.no-table-head tr:first-child td {
+        padding-top: @metrics-almost-medium-padding + 1px;
+      }
+
+      .align-right {
+        text-align: right;
+        padding-right: 0px;
+      }
+
+      .padding-right-very-small {
+        padding-right: @metrics-very-small-padding;
+      }
+
+      .padding-right-small {
+        padding-right: @metrics-small-padding;
+      }
+
+      .padding-right-medium {
+        padding-right: @metrics-medium-padding;
+      }
+
+      .padding-right-very-large {
+        padding-right: @metrics-very-large-padding;
+      }
+
+      .padding-right-extra-large {
+        padding-right: @metrics-extra-large-padding;
+      }
+
+      .padding-right-ultra-large {
+        padding-right: @metrics-ultra-large-padding;
+      }
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+
+      > div {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        padding-top: 12px;
+        height: 40px;
+        padding-bottom: 12px;
+        vertical-align: middle;
+        border-bottom: 1px solid @color-very-light-grey;
+        font-size: @font-size-medium;
+
+        > div:first-child {
+          .uppercase-section-column;
+          padding-right: @metrics-large-padding;
+          &.top-aligned {
+            vertical-align: top;
+          }
+          &.optional {
+            color: @color-dark-grey;
+          }
+        }
+
+        > div:nth-child(2) {
+          text-align: right;
+          flex-grow: 1;
+        }
+
+      }
+
+      > div:first-child {
+        margin-top: @metrics-almost-small-padding;
+      }
+
+      > div:last-child {
+        border-bottom: 0px solid @color-very-light-grey;
+      }
+
+    }
+
+  }
+}

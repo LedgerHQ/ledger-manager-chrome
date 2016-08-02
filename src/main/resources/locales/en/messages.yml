@@ -1,0 +1,22 @@
+# i18n
+language:
+  name: English
+
+# Application
+application:
+  name: Ledger Manager
+  small_description: TODO TRANSLATE
+  support_url: http\://support.ledgerwallet.com/
+  commands:
+    reload_page: Reload the current page
+    reload_application: Reload the application
+    update_firmware: Update the chip firmware
+    export_logs: Export the global logs
+  singleton_alert:
+    message: The {APPLICATION_NAME} application is already running. Please close it first and try again.
+
+# Dates formatting
+
+dates:
+  standard: YYYY/MM/DD [at] HH:mm
+

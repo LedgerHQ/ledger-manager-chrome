@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Ledger Wallet Ethereum</title>
+    <script src="libs/source-maps.min.js" defer></script>
+    <script src="libs/moment.js"></script>
+    <script src="libs/sha3.min.js"></script>
+    <script src="libs/sjcl.min.js"></script>
+    <script src="ledger-manager-chrome-fastopt.js"></script>
+    <script src="angular/jquery.min.js"></script>
+    <script src="angular/angular.min.js"></script>
+    <script src="angular/angular-route.min.js"></script>
+    <script src="libs/spin.min.js"></script>
+    <script src="libs/angular-translate.min.js"></script>
+    <script src="libs/angular-translate-loader-static-files.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="angular/angular.css">
+    <link rel="stylesheet" type="text/css" href="font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="common.css">
+</head>
+<body ng-csp="" ng-controller="WindowController as ctrl" ng-class="{'disable-pointer-events': !ctrl.isUiEnabled}">
+    <navigation-bar  class="no-print" ng-hide="!ctrl.showNavigationBar" on-click-refresh="ctrl.refresh()"></navigation-bar>
+    <div ng-view></div>
+    <snackbar class="no-print"></snackbar>
+</body>
+<script src="ledger-manager-chrome-launcher.js"></script>
+</html>
