@@ -38,7 +38,7 @@ object Routes {
     $routeProvider
       .when("/launch/", Route(templateUrl = "/templates/manager/launch.html"))
       .when("/applist/", Route(templateUrl = "/templates/manager/app_list.html"))
-      .when("/apply/:script/:params/", Route(templateUrl = "/templates/manager/apply_update.html"))
+      .when("/apply/:script/:product/:name/:params/", Route(templateUrl = "/templates/manager/apply_update.html"))
       .otherwise( Route( redirectTo = "/launch/"))
   }
 

@@ -72,19 +72,29 @@ class AppListController(val windowService: WindowService,
     }
   }
 
-  def install(pkg: js.Dynamic): Unit = {
-    js.Dynamic.global.console.log(pkg, s"/apply/install/${JSON.stringify(pkg)}/")
-    $location.path(s"/apply/install/${JSON.stringify(pkg)}")
+  def installFirmware(pkg: js.Dynamic): Unit = {
+    install("firmware", pkg.name.asInstanceOf[String], pkg.`final`)
+  }
+
+  def installFirmwareOsu(pkg: js.Dynamic): Unit = {
+    install("osu", pkg.name.asInstanceOf[String], pkg.`osu`)
+  }
+
+  def installApp(pkg: js.Dynamic): Unit = {
+    install("application", pkg.name.asInstanceOf[String], pkg.app)
+  }
+
+  private def install(product: String, name: String, pkg: js.Dynamic): Unit = {
+    $location.path(s"/apply/install/$product/$name/${JSON.stringify(pkg)}")
     $route.reload()
   }
 
   def uninstall(pkg: js.Dynamic): Unit = {
-    js.Dynamic.global.console.log(pkg)
     val params = js.Dynamic.literal(
       appName = pkg,
       targetId = 0x31100002
     )
-    $location.path(s"/apply/uninstall/${JSON.stringify(params)}")
+    $location.path(s"/apply/uninstall/application/${pkg}/${JSON.stringify(params)}")
     $route.reload()
   }
 

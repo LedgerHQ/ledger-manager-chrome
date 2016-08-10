@@ -59,13 +59,24 @@ class ApplyUpdateController(val windowService: WindowService,
                             $location: Location,
                             $routeParams: js.Dictionary[String]) extends Controller with ManagerController {
 
-  js.Dynamic.global.console.log($routeParams)
+  private val product = $routeParams("product")
+  private val productName = $routeParams("name")
 
   var mode = "wait"
   var lastError = ""
+  var progress = 0
+  var total = 100
 
-  private def error(mesage: String): Unit = {
+  def percent = ((progress.toDouble / total.toDouble) * 100).toInt
 
+  private def setMode(newMode: String) = {
+    if (newMode != mode) {
+      mode = newMode
+      $scope.$apply()
+      true
+    } else {
+      false
+    }
   }
 
   private def answer(socket: WebSocket)(response: js.Dynamic) = {
@@ -103,6 +114,10 @@ class ApplyUpdateController(val windowService: WindowService,
       case Success(device) =>
         val apdus = message.getJSONArray("data")
         def iterate(index: Int = 0, lastResult: Array[Byte] = Array.empty[Byte]): Future[Array[Byte]] = {
+          progress = index
+          total = apdus.length()
+          if (!setMode("load"))
+            $scope.$apply()
           if (index >= apdus.length()) {
             Future.successful(lastResult)
           } else {
@@ -173,6 +188,23 @@ class ApplyUpdateController(val windowService: WindowService,
       first = false
   }
 
+  val displayableName = {
+    product match {
+      case "osu" =>
+        var hash = params("hash").asInstanceOf[String]
+        hash = hash.substring(0, 4) + "..." + hash.substring(hash.length - 4, hash.length)
+        s"OSU for firmware $productName ($hash)"
+      case "firmware" =>
+        s"firmware $productName"
+      case "application" =>
+        s"$productName application".toLowerCase
+    }
+  }
+
+  val DisplayableName = displayableName.charAt(0).toUpper + displayableName.substring(1)
+  val action = if ($routeParams("script") == "uninstall") "Removing" else "Installing"
+  val done = if ($routeParams("script") == "uninstall") "removed" else "installed"
+
   Application.webSocketFactory.connect(endpoint.toString) flatMap {(socket) =>
     val promise = Promise[Unit]()
     socket.onJsonMessage({(message) =>
@@ -192,13 +224,11 @@ class ApplyUpdateController(val windowService: WindowService,
     promise.future
   } onComplete {
     case Success(_) =>
-      mode = "success"
-      $scope.$apply()
+      setMode("success")
     case Failure(ex) =>
       ex.printStackTrace()
       lastError = ex.getMessage
-      mode = "error"
-      $scope.$apply()
+      setMode("error")
   }
 
 }

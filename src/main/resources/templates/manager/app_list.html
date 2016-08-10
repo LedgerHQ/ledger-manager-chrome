@@ -6,8 +6,8 @@
         <div class="panel" ng-repeat="firmware in ctrl.firmwares">
             <div>Firmware {{firmware.name}}</div>
             <div class="spacer"></div>
-            <lbutton text="Install OSU" ng-click="ctrl.install(firmware.osu)"></lbutton>
-            <lbutton text="Install Firmware" ng-click="ctrl.install(firmware.final)"></lbutton>
+            <lbutton text="Install OSU" ng-click="ctrl.installFirmwareOsu(firmware)"></lbutton>
+            <lbutton text="Install Firmware" ng-click="ctrl.installFirmware(firmware)"></lbutton>
         </div>
     </section>
     <section>
@@ -17,7 +17,7 @@
         <div class="panel" ng-repeat="application in ctrl.applications">
             <div>{{application.name}}</div>
             <div class="spacer"></div>
-            <lbutton text="Install" ng-click="ctrl.install(application.app)"></lbutton>
+            <lbutton text="Install" ng-click="ctrl.installApp(application)"></lbutton>
             <lbutton text="Uninstall"  type="cancel" ng-click="ctrl.uninstall(application.name)"></lbutton>
         </div>
     </section>

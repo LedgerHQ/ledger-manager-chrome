@@ -1,14 +1,14 @@
 <div class="launch-screen" ng-controller="ApplyUpdateController as ctrl">
     <div class="launch-screen" ng-show="ctrl.mode == 'wait'">
         <spinner></spinner>
-        <div style="margin-top: 30px">
-            Please wait this may take a while...
+        <div style="margin-top: 30px; text-align: center">
+            {{ctrl.action}} {{ctrl.displayableName}}. <br/><br/>Please wait this may take a while...
         </div>
     </div>
     <div class="launch-screen" ng-show="ctrl.mode == 'load'">
-        <progressbar></progressbar>
-        <div style="margin-top: 30px">
-            Loading please wait this may take a while...
+        <progressbar percent="{{ctrl.percent}}"></progressbar>
+        <div style="margin-top: 30px; text-align: center">
+            Loading {{ctrl.displayableName}}. <br/><br/>Please wait this may take a while...
         </div>
     </div>
     <div class="launch-screen" ng-show="ctrl.mode == 'error'">
@@ -23,8 +23,8 @@
     </div>
     <div class="launch-screen" ng-show="ctrl.mode == 'success'">
         <img src="images/icons/ic_success.png" width="50" height="50">
-        <div style="margin-top: 30px">
-            Update successfully applied
+        <div style="margin-top: 30px;">
+            {{ctrl.DisplayableName}} succesfully {{ctrl.done}}.
         </div>
         <action-bottom-bar style="margin-top: 30px">
             <lbutton text="Home" ng-click="ctrl.goHome()"></lbutton>

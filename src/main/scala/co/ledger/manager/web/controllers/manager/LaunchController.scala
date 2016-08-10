@@ -52,9 +52,6 @@ class LaunchController(val windowService: WindowService,
 
   private var _scanRequest: Option[ScanRequest] = None
 
-  val id = Random.nextInt()
-
-  println(s"LAUNCH $id")
   def startDeviceDiscovery(): Unit = {
     if (_scanRequest.isEmpty) {
       _scanRequest = Option(deviceService.requestScan())
