@@ -2,14 +2,17 @@ package co.ledger.manager.web.controllers.manager
 
 import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.Module.RichModule
+import biz.enef.angulate.core.Location
+import biz.enef.angulate.ext.Route
 import co.ledger.manager.web.controllers.WindowController
 import co.ledger.manager.web.services.{DeviceService, WindowService}
 import co.ledger.wallet.core.device.{Device, DeviceFactory}
 import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
 import co.ledger.wallet.core.device.ethereum.LedgerApi
-import scala.concurrent.ExecutionContext.Implicits.global
 
-import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.scalajs.js
+import scala.util.{Failure, Random, Success}
 
 /**
   *
@@ -43,10 +46,15 @@ import scala.util.{Failure, Success}
   */
 class LaunchController(val windowService: WindowService,
                        deviceService: DeviceService,
-                       $scope: Scope) extends Controller with ManagerController {
+                       $scope: Scope,
+                       $route: js.Dynamic,
+                       $location: Location) extends Controller with ManagerController {
 
   private var _scanRequest: Option[ScanRequest] = None
 
+  val id = Random.nextInt()
+
+  println(s"LAUNCH $id")
   def startDeviceDiscovery(): Unit = {
     if (_scanRequest.isEmpty) {
       _scanRequest = Option(deviceService.requestScan())
@@ -69,7 +77,9 @@ class LaunchController(val windowService: WindowService,
       LedgerApi(device).getFirmwareVersion()
     } onComplete {
       case Success(_) =>
-        println("Let's go")
+        deviceService.registerDevice(device)
+        $location.path("/applist")
+        $route.reload()
       case Failure(ex) =>
         startDeviceDiscovery()
     }

@@ -82,9 +82,6 @@ class DeviceService($location: Location,  $route: js.Dynamic, sessionService: Se
     override def receive: Receive = {
       case Connect(_) =>
       case Disconnect(_) =>
-        sessionService.stopCurrentSessions()
-        $location.path("/onboarding/launch")
-        $route.reload()
     }
   }
 }

@@ -1,0 +1,33 @@
+<div class="launch-screen" ng-controller="ApplyUpdateController as ctrl">
+    <div class="launch-screen" ng-show="ctrl.mode == 'wait'">
+        <spinner></spinner>
+        <div style="margin-top: 30px">
+            Please wait this may take a while...
+        </div>
+    </div>
+    <div class="launch-screen" ng-show="ctrl.mode == 'load'">
+        <progressbar></progressbar>
+        <div style="margin-top: 30px">
+            Loading please wait this may take a while...
+        </div>
+    </div>
+    <div class="launch-screen" ng-show="ctrl.mode == 'error'">
+        <img src="images/icons/ic_error.png" width="50" height="50">
+        <div style="margin-top: 30px">
+            An error occurred ({{ctrl.lastError}})
+        </div>
+        <action-bottom-bar style="margin-top: 30px">
+            <lbutton text="Export logs" type="cancel" ng-click="ctrl.exportLogs()"></lbutton>
+            <lbutton text="Home" ng-click="ctrl.goHome()"></lbutton>
+        </action-bottom-bar>
+    </div>
+    <div class="launch-screen" ng-show="ctrl.mode == 'success'">
+        <img src="images/icons/ic_success.png" width="50" height="50">
+        <div style="margin-top: 30px">
+            Update successfully applied
+        </div>
+        <action-bottom-bar style="margin-top: 30px">
+            <lbutton text="Home" ng-click="ctrl.goHome()"></lbutton>
+        </action-bottom-bar>
+    </div>
+</div>

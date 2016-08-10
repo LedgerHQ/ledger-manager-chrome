@@ -1,12 +1,15 @@
 package co.ledger.manager.web
 
+import java.net.URI
+
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate._
 import biz.enef.angulate.core.HttpService
 import biz.enef.angulate.ext.RouteProvider
 import co.ledger.manager.web.components._
 import co.ledger.manager.web.controllers.WindowController
-import co.ledger.manager.web.controllers.manager.LaunchController
+import co.ledger.manager.web.controllers.manager.{AppListController, ApplyUpdateController, LaunchController}
+import co.ledger.manager.web.core.net.{JQHttpClient, JsWebSocketFactory}
 import co.ledger.manager.web.core.utils.ChromePreferences
 import co.ledger.manager.web.i18n.{I18n, TranslateProvider}
 import co.ledger.manager.web.services.{DeviceService, SessionService, WindowService}
@@ -21,6 +24,8 @@ import scala.scalajs.js.JSApp
 
 object Application extends JSApp{
 
+  val httpClient = new JQHttpClient("http://localhost:3000/update")
+  val webSocketFactory = new JsWebSocketFactory(URI.create("ws://localhost:3001"))
   @scala.scalajs.js.annotation.JSExport
   override def main(): Unit = {
     run()
@@ -40,6 +45,8 @@ object Application extends JSApp{
     // Controllers
     WindowController.init(module)
     LaunchController.init(module)
+    AppListController.init(module)
+    ApplyUpdateController.init(module)
 
     // Services
     WindowService.init(module)

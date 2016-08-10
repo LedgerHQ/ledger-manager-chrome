@@ -279,8 +279,8 @@ object LedgerCommonApiInterface {
     val sw = (reader.readNextByte() & 0xFF) << 8 | (reader.readNextByte() & 0xFF)
   }
 
-  class LedgerApiException(code: Int, msg: String)
-    extends Exception(s"$msg - ${Integer.toHexString(code)}")
+  class LedgerApiException(val sw: Int, msg: String)
+    extends Exception(s"$msg - ${Integer.toHexString(sw)}")
   case class LedgerApiIncorrectLengthException() extends
     LedgerApiException(0x6700, "Incorrect length")
   case class LedgerApiInvalidAccessRightException() extends

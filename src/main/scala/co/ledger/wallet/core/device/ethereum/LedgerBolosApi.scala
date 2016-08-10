@@ -67,6 +67,14 @@ trait LedgerBolosApi extends LedgerCommonApiInterface {
         case other => throw other
       }
     }
+
+  def exchange(command: Array[Byte]): Future[Array[Byte]] = {
+    sendApdu(command) map {(result) =>
+      matchErrorsAndThrow(result)
+      result.data.readNextBytesUntilEnd()
+    }
+  }
+
 }
 
 object LedgerBolosApi {

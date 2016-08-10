@@ -36,8 +36,10 @@ object Routes {
 
   def declare($routeProvider: RouteProvider) = {
     $routeProvider
-      .when("/launch/:animated?", Route(templateUrl = "/templates/manager/launch.html"))
-      .otherwise( Route( redirectTo = "/launch/animated"))
+      .when("/launch/", Route(templateUrl = "/templates/manager/launch.html"))
+      .when("/applist/", Route(templateUrl = "/templates/manager/app_list.html"))
+      .when("/apply/:script/:params/", Route(templateUrl = "/templates/manager/apply_update.html"))
+      .otherwise( Route( redirectTo = "/launch/"))
   }
 
 }
