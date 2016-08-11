@@ -221,6 +221,10 @@ class ApplyUpdateController(val windowService: WindowService,
           promise.success()
       }
     })
+    socket.onClose {(ex) =>
+      if (!promise.isCompleted)
+        promise.failure(new Exception("Socket closed"))
+    }
     promise.future
   } onComplete {
     case Success(_) =>
