@@ -5,7 +5,7 @@ language:
 # Application
 application:
   name: Ledger Manager
-  small_description: TODO TRANSLATE
+  small_description: Manager
   support_url: http\://support.ledgerwallet.com/
   commands:
     reload_page: Reload the current page
