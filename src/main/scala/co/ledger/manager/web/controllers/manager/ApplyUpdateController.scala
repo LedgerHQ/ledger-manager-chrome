@@ -60,7 +60,7 @@ class ApplyUpdateController(val windowService: WindowService,
                             $routeParams: js.Dictionary[String]) extends Controller with ManagerController {
 
   private val product = $routeParams("product")
-  private val productName = $routeParams("name")
+  private val productName = js.Dynamic.global.decodeURIComponent($routeParams("name")).asInstanceOf[String]
 
   var mode = "wait"
   var lastError = ""
@@ -178,7 +178,7 @@ class ApplyUpdateController(val windowService: WindowService,
 
   val endpoint = new StringWriter()
   endpoint.append(s"/${$routeParams("script")}?")
-  val params = JSON.parse($routeParams("params")).asInstanceOf[js.Dictionary[js.Any]]
+  val params = JSON.parse(js.Dynamic.global.decodeURIComponent($routeParams("params")).asInstanceOf[String]).asInstanceOf[js.Dictionary[js.Any]]
   var first = true
   params.foreach {
     case (k, v) =>

@@ -1,5 +1,7 @@
 package co.ledger.manager.web.controllers.manager
 
+import java.net.URLEncoder
+
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.Location
 import biz.enef.angulate.{Controller, Scope}
@@ -85,7 +87,7 @@ class AppListController(val windowService: WindowService,
   }
 
   private def install(product: String, name: String, pkg: js.Dynamic): Unit = {
-    $location.path(s"/apply/install/$product/$name/${JSON.stringify(pkg)}")
+    $location.path(s"/apply/install/$product/${js.Dynamic.global.encodeURIComponent(name)}/${JSON.stringify(pkg)}")
     $route.reload()
   }
 
@@ -94,7 +96,9 @@ class AppListController(val windowService: WindowService,
       appName = pkg,
       targetId = 0x31100002
     )
-    $location.path(s"/apply/uninstall/application/${pkg}/${JSON.stringify(params)}")
+    val name = js.Dynamic.global.encodeURIComponent(pkg)
+    js.Dynamic.global.console.log(s"/apply/uninstall/application/$name/${js.Dynamic.global.encodeURIComponent(JSON.stringify(params))}")
+    $location.path(s"/apply/uninstall/application/$name/${js.Dynamic.global.encodeURIComponent(JSON.stringify(params))}")
     $route.reload()
   }
 
