@@ -8,7 +8,7 @@ import biz.enef.angulate.core.HttpService
 import biz.enef.angulate.ext.RouteProvider
 import co.ledger.manager.web.components._
 import co.ledger.manager.web.controllers.WindowController
-import co.ledger.manager.web.controllers.manager.{AppListController, ApplyUpdateController, LaunchController}
+import co.ledger.manager.web.controllers.manager.{AppListController, ApplyUpdateController, BatchAppListController, LaunchController}
 import co.ledger.manager.web.core.net.{JQHttpClient, JsWebSocketFactory}
 import co.ledger.manager.web.core.utils.ChromePreferences
 import co.ledger.manager.web.i18n.{I18n, TranslateProvider}
@@ -46,6 +46,7 @@ object Application extends JSApp{
     WindowController.init(module)
     LaunchController.init(module)
     AppListController.init(module)
+    BatchAppListController.init(module)
     ApplyUpdateController.init(module)
 
     // Services
@@ -54,7 +55,6 @@ object Application extends JSApp{
     SessionService.init(module)
 
     // Filters
-
 
     ChromePreferences.init()
     module.config(initRoutes _)
