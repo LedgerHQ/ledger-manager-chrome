@@ -10,6 +10,8 @@ import co.ledger.manager.web.Application
 import co.ledger.manager.web.core.filesystem.ChromeFileSystem
 import co.ledger.manager.web.core.utils.PermissionsHelper
 import co.ledger.manager.web.services.{DeviceService, WindowService}
+import co.ledger.wallet.core.device.{Device, DeviceFactory}
+import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
 import co.ledger.wallet.core.device.ethereum.LedgerCommonApiInterface.LedgerApiException
 import co.ledger.wallet.core.device.ethereum.{LedgerApi, LedgerCommonApiInterface}
 import co.ledger.wallet.core.net.WebSocket
@@ -59,8 +61,10 @@ class ApplyUpdateController(val windowService: WindowService,
                             $location: Location,
                             $routeParams: js.Dictionary[String]) extends Controller with ManagerController {
 
+  js.Dynamic.global.console.log($routeParams)
+
   private val product = $routeParams("product")
-  private val productName = $routeParams("name")
+  private val productName = js.Dynamic.global.decodeURIComponent($routeParams("name")).asInstanceOf[String]
 
   var mode = "wait"
   var lastError = ""
@@ -177,8 +181,11 @@ class ApplyUpdateController(val windowService: WindowService,
   }
 
   val endpoint = new StringWriter()
-  endpoint.append(s"/${$routeParams("script")}?")
-  val params = JSON.parse($routeParams("params")).asInstanceOf[js.Dictionary[js.Any]]
+  val script = if($routeParams("script") == "batch") "install" else $routeParams("script")
+  val isInBatchMode = $routeParams("script") == "batch"
+
+  endpoint.append(s"/$script?")
+  val params = JSON.parse(js.Dynamic.global.decodeURIComponent($routeParams("params")).asInstanceOf[String]).asInstanceOf[js.Dictionary[js.Any]]
   var first = true
   params.foreach {
     case (k, v) =>
@@ -205,38 +212,102 @@ class ApplyUpdateController(val windowService: WindowService,
   val action = if ($routeParams("script") == "uninstall") "Removing" else "Installing"
   val done = if ($routeParams("script") == "uninstall") "removed" else "installed"
 
-  Application.webSocketFactory.connect(endpoint.toString) flatMap {(socket) =>
-    val promise = Promise[Unit]()
-    socket.onJsonMessage({(message) =>
-      println("Received " + message.toString(2))
-      println("Query: " + message.getString("query"))
-      message.getString("query") match {
-        case "exchange" =>
-          performExchange(socket, message, promise)
-        case "bulk" =>
-          performBulkExchange(socket, message, promise)
-        case "error" =>
-          promise.failure(new Exception(message.optString("data", "Unknown error")))
-        case "success" =>
-          promise.success()
-      }
-    })
-    socket.onClose {(ex) =>
-      if (!promise.isCompleted)
-        promise.failure(new Exception("Socket closed"))
+  def nextBatchedApp(): Unit = {
+    ApplyUpdateController.APP_BATCH = ApplyUpdateController.APP_BATCH.drop(1)
+    ApplyUpdateController.APP_BATCH.headOption match {
+      case Some(app) =>
+        $location.path(s"/apply/batch/application/${js.Dynamic.global.encodeURIComponent(app.name)}/${JSON.stringify(app.app)}/")
+        $route.reload()
+      case None =>
+        // Route to home
+        $location.path("/batchapplist/")
+        $route.reload()
     }
-    promise.future
-  } onComplete {
-    case Success(_) =>
-      setMode("success")
-    case Failure(ex) =>
-      ex.printStackTrace()
-      lastError = ex.getMessage
-      setMode("error")
+  }
+
+  private var _scanRequest: Option[ScanRequest] = None
+
+  def startDeviceDiscovery(): Unit = {
+    if (_scanRequest.isEmpty) {
+      _scanRequest = Option(deviceService.requestScan())
+      _scanRequest.get.onScanUpdate {
+        case DeviceDiscovered(device) =>
+          if (_scanRequest.isDefined) {
+            connectDevice(device)
+            _scanRequest.get.stop()
+            _scanRequest = None
+          }
+        case DeviceLost(device) =>
+      }
+      _scanRequest.get.duration = DeviceFactory.InfiniteScanDuration
+      _scanRequest.get.start()
+    }
+  }
+
+  def connectDevice(device: Device): Unit = {
+    device.connect() flatMap {(_) =>
+      LedgerApi(device).getFirmwareVersion()
+    } onComplete {
+      case Success(_) =>
+        deviceService.registerDevice(device)
+        applyScript()
+      case Failure(ex) =>
+        startDeviceDiscovery()
+    }
+  }
+
+  def stopDeviceDiscovery(): Unit = {
+    _scanRequest foreach {(r) =>
+      r.stop()
+      _scanRequest = None
+    }
+  }
+
+  $scope.$on("$destroy", {() =>
+    stopDeviceDiscovery()
+  })
+
+  startDeviceDiscovery()
+
+  def applyScript(): Unit = {
+    Application.webSocketFactory.connect(endpoint.toString) flatMap {(socket) =>
+      val promise = Promise[Unit]()
+      socket.onJsonMessage({(message) =>
+        println("Received " + message.toString(2))
+        println("Query: " + message.getString("query"))
+        message.getString("query") match {
+          case "exchange" =>
+            performExchange(socket, message, promise)
+          case "bulk" =>
+            performBulkExchange(socket, message, promise)
+          case "error" =>
+            promise.failure(new Exception(message.optString("data", "Unknown error")))
+          case "success" =>
+            promise.success()
+        }
+      })
+      socket.onClose {(ex) =>
+        if (!promise.isCompleted)
+          promise.failure(new Exception("Socket closed"))
+      }
+      promise.future
+    } onComplete {
+      case Success(_) =>
+        if (!isInBatchMode)
+          setMode("success")
+        else
+          nextBatchedApp()
+      case Failure(ex) =>
+        ex.printStackTrace()
+        lastError = ex.getMessage
+        setMode("error")
+    }
   }
 
 }
 
 object ApplyUpdateController {
+  // Don't do that
+  var APP_BATCH = Array[js.Dynamic]()
   def init(module: RichModule) = module.controllerOf[ApplyUpdateController]("ApplyUpdateController")
 }

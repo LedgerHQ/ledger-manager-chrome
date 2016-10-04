@@ -1,0 +1,17 @@
+<div class="wallet-view scrollable" ng-controller="BatchAppListController as ctrl">
+    <section>
+        <header>
+            <h1>Applications</h1>
+        </header>
+        <div class="panel" ng-repeat="application in ctrl.applications">
+            <div>{{application.name}}</div>
+            <div class="spacer"></div>
+            <input type="checkbox" ng-click="ctrl.toggle(application)" ng-checked="ctrl.isChecked(application)"></input>
+        </div>
+    </section>
+    <div class="panel" style="background-color: transparent;border: 0;">
+        <div class="spacer"></div>
+        <lbutton text="Back" type="cancel" ng-click="ctrl.back()"></lbutton>
+        <lbutton text="Install" ng-click="ctrl.installBatch()"></lbutton>
+    </div>
+</div>

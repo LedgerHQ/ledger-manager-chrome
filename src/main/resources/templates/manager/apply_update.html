@@ -18,6 +18,7 @@
         </div>
         <action-bottom-bar style="margin-top: 30px">
             <lbutton text="Export logs" type="cancel" ng-click="ctrl.exportLogs()"></lbutton>
+            <lbutton text="Continue" ng-click="ctrl.nextBatchedApp()" ng-show="ctrl.isInBatchMode"></lbutton>
             <lbutton text="Home" ng-click="ctrl.goHome()"></lbutton>
         </action-bottom-bar>
     </div>

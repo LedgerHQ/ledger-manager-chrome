@@ -1,5 +1,7 @@
 package co.ledger.manager.web.controllers.manager
 
+import java.net.URLEncoder
+
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.Location
 import biz.enef.angulate.{Controller, Scope}
@@ -52,7 +54,12 @@ class AppListController(val windowService: WindowService,
   var firmwares = js.Array[js.Dictionary[js.Any]]()
 
   def fetchApplications(): Future[Unit] = {
-    Application.httpClient.get("/applications").json map {
+    val provider =
+      if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
+        "?provider=ledger"
+      else
+       ""
+    Application.httpClient.get("/applications" + provider).json map {
       case (json, _) =>
         if (json.has("nanos")) {
           val apps = json.getJSONArray("nanos")
@@ -62,7 +69,12 @@ class AppListController(val windowService: WindowService,
   }
 
   def fetchFirmware(): Future[Unit] = {
-    Application.httpClient.get("/firmwares").json map {
+    val provider =
+      if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
+        "?provider=ledger"
+      else
+        ""
+    Application.httpClient.get("/firmwares" + provider).json map {
       case (json, _) =>
         if (json.has("nanos")) {
           val firms = json.getJSONArray("nanos")
@@ -85,7 +97,7 @@ class AppListController(val windowService: WindowService,
   }
 
   private def install(product: String, name: String, pkg: js.Dynamic): Unit = {
-    $location.path(s"/apply/install/$product/$name/${JSON.stringify(pkg)}")
+    $location.path(s"/apply/install/$product/${js.Dynamic.global.encodeURIComponent(name)}/${JSON.stringify(pkg)}/")
     $route.reload()
   }
 
@@ -94,17 +106,29 @@ class AppListController(val windowService: WindowService,
       appName = pkg,
       targetId = 0x31100002
     )
-    $location.path(s"/apply/uninstall/application/${pkg}/${JSON.stringify(params)}")
+    val name = js.Dynamic.global.encodeURIComponent(pkg)
+    $location.path(s"/apply/uninstall/application/$name/${js.Dynamic.global.encodeURIComponent(JSON.stringify(params))}/")
     $route.reload()
   }
 
-  fetchApplications() flatMap {(_) =>
-    fetchFirmware()
-  } onComplete {
-    case Success(_) => $scope.$apply()
-    case Failure(ex) =>
-      ex.printStackTrace()
+  def batchInstall(): Unit = {
+    $location.path(s"/batchapplist/")
+    $route.reload()
   }
+
+  def refresh(): Unit = {
+    applications = js.Array[js.Dictionary[js.Any]]()
+    firmwares = js.Array[js.Dictionary[js.Any]]()
+    fetchApplications() flatMap {(_) =>
+      fetchFirmware()
+    } onComplete {
+      case Success(_) => $scope.$apply()
+      case Failure(ex) =>
+        ex.printStackTrace()
+    }
+  }
+
+  refresh()
 
 }
 
