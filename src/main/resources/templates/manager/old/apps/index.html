@@ -1,0 +1,42 @@
+<div class="panel-view" ng-controller="OldAppsListController as ctrl">
+    <left-panel></left-panel>
+    <div class="right-panel list-panel scrollable" ng-hide="ctrl.isLoading() || ctrl.isEmpty()">
+
+        <div class="list-item"  ng-repeat="app in ctrl.getApplications()">
+            <img async-src="ctrl.icon(app.icon)" width="50" height="50"/>
+            <div>
+                <h1>{{app.name}} <span ng-show="app.developer" translate>old.common.dev_version</span></h1>
+                <p>Version {{app.version}}</p>
+            </div>
+            <div class="spacer"></div>
+            <a ng-show="app.release_note.length > 0" translate>old.common.release_notes</a>
+            <div>
+                <div class="round-button green">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                </div>
+                <div class="round-button grey">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="list-placeholder"></div>
+        <div class="footer">
+            <a ng-click="ctrl.toggleDevMode()">
+                <span ng-show="!ctrl.isInDevMode()" translate>old.common.show_dev</span>
+                <span ng-show="ctrl.isInDevMode()" translate>old.common.hide_dev</span>
+            </a>
+        </div>
+
+    </div>
+    <div class="right-panel single-text-panel scrollable"  ng-hide="ctrl.isLoading() || !ctrl.isEmpty()">
+        <h1 translate>
+            common.no_items_to_display
+        </h1>
+    </div>
+    <div class="right-panel loading-panel scrollable"  ng-show="ctrl.isLoading()">
+        <spinner></spinner>
+        <h1>Updating store...</h1>
+        <p translate>common.please_wait</p>
+    </div>
+</div>

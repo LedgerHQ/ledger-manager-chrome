@@ -1,0 +1,136 @@
+@import (reference) "../constants";
+
+.list-panel {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 20px;
+
+  > .list-placeholder {
+    width: 100%;
+    height: 71px;
+    flex-shrink: 0;
+  }
+
+  > .list-item {
+    display: flex;
+    margin-left: 40px;
+    margin-right: 40px;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    flex-shrink: 0;
+
+    border-top: solid 1px @color-very-light-grey;
+
+    &:first-child {
+      border-top: solid 0 @color-very-light-grey;
+    }
+
+    img {
+      background-color: @color-very-light-grey;
+      border-radius: 9px;
+      margin-right: 20px;
+    }
+
+    > div h1 {
+      color: @color-black;
+      font-weight: @font-weight-regular;
+      font-size: @font-size-medium;
+      margin-bottom: 8px;
+    }
+
+    > div p {
+      color: @color-soft-grey;
+      font-weight: @font-weight-regular;
+      font-size: @font-size-very-small;
+    }
+
+    > a {
+      color: @color-soft-grey;
+      font-weight: @font-weight-regular;
+      font-size: @font-size-very-small;
+      margin-right: 20px;
+
+      &:hover {
+        color: darken(@color-soft-grey, @color-very-strong-darken-value);
+        cursor: pointer;
+      }
+
+    }
+
+    > div div.round-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-right: 5px;
+      color: @color-white;
+      font-size: 11px;
+      width: 24px;
+      height: 24px;
+
+      > i {
+        display: block;
+      }
+
+      &.green {
+        background-color: @color-action-green;
+
+        &:hover {
+          cursor: pointer;
+          background-color: darken(@color-action-green, @color-default-darken-value);
+        }
+
+      }
+
+      &.grey {
+        background-color: @color-light-grey;
+
+        &:hover {
+          cursor: pointer;
+          background-color: darken(@color-light-grey, @color-default-darken-value);
+        }
+
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    .spacer {
+      flex-grow: 1;
+    }
+
+  }
+
+  > .footer {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    width: ~"calc(100% - 200px)";
+    background-color: @color-background-color;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 40px;
+    padding-top: 20px;
+    justify-content: flex-end;
+
+    > a {
+      color: @color-soft-grey;
+      font-weight: @font-weight-regular;
+      font-size: @font-size-very-small;
+      margin-right: 20px;
+
+      &:hover {
+        color: darken(@color-soft-grey, @color-very-strong-darken-value);
+        cursor: pointer;
+      }
+
+    }
+
+  }
+
+}

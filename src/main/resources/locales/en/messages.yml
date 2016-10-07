@@ -20,3 +20,22 @@ application:
 dates:
   standard: YYYY/MM/DD [at] HH:mm
 
+common:
+  no_items_to_display: No items to display.
+  please_wait: Please wait this may take a few moments.
+
+left_panel:
+  applications: Application
+  firmwares: Firmwares
+  store: Store
+  my_device: My device
+  last_update: Last update
+
+
+old:
+  common:
+    release_notes: release notes
+    show_dev: show developer items
+    hide_dev: hide developer items
+    dev_version: (developer)
+

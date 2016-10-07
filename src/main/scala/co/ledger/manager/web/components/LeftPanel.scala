@@ -1,13 +1,14 @@
-package co.ledger.manager.web
+package co.ledger.manager.web.components
 
-import biz.enef.angulate.ext.{Route, RouteProvider}
+import biz.enef.angulate.Directive
+import biz.enef.angulate.Module.RichModule
 
 /**
   *
-  * Routes
-  * ledger-wallet-ethereum-chrome
+  * LeftPanel
+  * ledger-manager-chrome
   *
-  * Created by Pierre Pollastri on 03/05/2016.
+  * Created by Pierre Pollastri on 05/10/2016.
   *
   * The MIT License (MIT)
   *
@@ -32,18 +33,10 @@ import biz.enef.angulate.ext.{Route, RouteProvider}
   * SOFTWARE.
   *
   */
-object Routes {
+class LeftPanel extends Directive {
+  override def templateUrl: String = "/templates/components/left-panel.html"
+}
 
-  def declare($routeProvider: RouteProvider) = {
-    $routeProvider
-      .when("/launch/", Route(templateUrl = "/templates/manager/launch.html"))
-      .when("/applist/", Route(templateUrl = "/templates/manager/app_list.html"))
-      .when("/batchapplist/", Route(templateUrl = "/templates/manager/batch_app_list.html"))
-      .when("/apply/:script/:product/:name/:params", Route(templateUrl = "/templates/manager/apply_update.html"))
-      // Old UI for first Nano S version
-      .when("/old/apps/index", Route(templateUrl = "/templates/manager/old/apps/index.html"))
-
-      .otherwise( Route( redirectTo = "/old/apps/index"))
-  }
-
+object LeftPanel {
+  def init(module: RichModule) = module.directiveOf[LeftPanel]("leftPanel")
 }
