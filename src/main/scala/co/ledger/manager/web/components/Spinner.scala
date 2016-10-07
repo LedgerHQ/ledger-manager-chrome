@@ -2,7 +2,7 @@ package co.ledger.manager.web.components
 
 import java.util.Date
 
-import biz.enef.angulate.Directive
+import biz.enef.angulate.{Directive, Scope}
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.{Attributes, JQLite}
 import org.scalajs.dom
@@ -43,6 +43,8 @@ class Spinner extends Directive {
   import js.Dynamic.{ global => g, newInstance => jsnew }
   import js.timers._
 
+  override type ScopeType = Scope
+
   override def template: String =
     """
       |<div style="width: 50px; height: 50px">
@@ -59,6 +61,9 @@ class Spinner extends Directive {
       _interval = js.Dynamic.global.requestAnimationFrame({() =>
         draw(_ctx)
       })
+      scope.$on("$destroy", {() =>
+        _destroyed = true
+      })
     }
   }
 
@@ -71,8 +76,6 @@ class Spinner extends Directive {
     val y = height / 2
 
     val t = new Date().getTime - _startTime
-
-    //js.Dynamic.global.console.log(width, height, radius, x, y)
 
     ctx.clearRect(0, 0, width, height)
     ctx.save()
@@ -110,11 +113,14 @@ class Spinner extends Directive {
     ctx.fill()
     ctx.restore()
 
-    js.Dynamic.global.requestAnimationFrame({() =>
-      draw(_ctx)
-    })
+    if (!_destroyed) {
+      js.Dynamic.global.requestAnimationFrame({ () =>
+        draw(_ctx)
+      })
+    }
   }
 
+  private var _destroyed = false
   private var _startTime = 0L
   private var _canvas: dom.html.Canvas = null
   private var _ctx: dom.CanvasRenderingContext2D = null

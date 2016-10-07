@@ -38,4 +38,5 @@ old:
     show_dev: show developer items
     hide_dev: hide developer items
     dev_version: (developer)
-
+  apps:
+    loading: Updating store...

@@ -69,8 +69,9 @@ class OldAppsListController(val windowService: WindowService,
     }
   }
 
-  def isLoading() = true
-  def isEmpty() = true
+  var _loading = true
+  def isLoading() = _loading
+  def isEmpty() = getApplications().length == 0
 
   def isInDevMode() = Application.developerMode
 
@@ -89,8 +90,11 @@ class OldAppsListController(val windowService: WindowService,
 
   def refresh(): Unit = {
     applications = js.Array[js.Dictionary[js.Any]]()
+    _loading = true
     fetchApplications() onComplete {
-      case Success(_) => $scope.$apply()
+      case Success(_) =>
+        _loading = false
+        $scope.$apply()
       case Failure(ex) =>
         ex.printStackTrace()
     }
