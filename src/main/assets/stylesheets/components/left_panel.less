@@ -62,31 +62,29 @@ left-panel {
         width: 5px;
         margin-right: 25px;
 
-        &.disabled {
-          background-color: @color-light-grey;
-        }
-
-        &.selected {
-          background-color: @color-action-green;
-        }
-
       }
 
       &:hover {
         cursor: pointer;
         > .selector {
           background-color: @color-light-grey;
-          &.disabled {
-            background-color: @color-light-grey;
-          }
-
-          &.selected {
-            background-color: @color-action-green;
-          }
-
         }
       }
 
+    }
+
+    > .item.selected {
+      pointer-events: none;
+      > .selector {
+        background-color: @color-action-green;
+      }
+    }
+
+    > .item.disabled {
+      pointer-events: none;
+      > .selector {
+        background-color: @color-light-grey;
+      }
     }
 
     > .double-line-item {

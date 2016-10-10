@@ -1,18 +1,17 @@
 package co.ledger.manager.web.controllers.manager
 
-import java.net.URLEncoder
-
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.Location
 import biz.enef.angulate.{Controller, Scope}
 import co.ledger.manager.web.Application
+import co.ledger.manager.web.core.utils.UrlEncoder
 import co.ledger.manager.web.services.{DeviceService, WindowService}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSON
+import scala.util.{Failure, Success}
 
 /**
   *
@@ -97,7 +96,7 @@ class AppListController(val windowService: WindowService,
   }
 
   private def install(product: String, name: String, pkg: js.Dynamic): Unit = {
-    $location.path(s"/apply/install/$product/${js.Dynamic.global.encodeURIComponent(name)}/${JSON.stringify(pkg)}/")
+    $location.path(s"/apply/install/${UrlEncoder.encode(product)}/${js.Dynamic.global.encodeURIComponent(name)}/${UrlEncoder.encode(JSON.stringify(pkg))}/")
     $route.reload()
   }
 
@@ -107,7 +106,7 @@ class AppListController(val windowService: WindowService,
       targetId = 0x31100002
     )
     val name = js.Dynamic.global.encodeURIComponent(pkg)
-    $location.path(s"/apply/uninstall/application/$name/${js.Dynamic.global.encodeURIComponent(JSON.stringify(params))}/")
+    $location.path(s"/apply/uninstall/application/$name/${UrlEncoder.encode(JSON.stringify(params))}/")
     $route.reload()
   }
 

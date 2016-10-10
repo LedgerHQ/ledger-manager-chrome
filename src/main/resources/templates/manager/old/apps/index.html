@@ -1,5 +1,5 @@
 <div class="panel-view" ng-controller="OldAppsListController as ctrl">
-    <left-panel></left-panel>
+    <left-panel selected-category="apps"></left-panel>
     <div class="right-panel list-panel scrollable" ng-hide="ctrl.isLoading() || ctrl.isEmpty()">
 
         <div class="list-item"  ng-repeat="app in ctrl.getApplications()">

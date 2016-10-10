@@ -23,6 +23,8 @@ dates:
 common:
   no_items_to_display: No items to display.
   please_wait: Please wait this may take a few moments.
+  applications: applications
+  firmwares: firmwares
 
 left_panel:
   applications: Application

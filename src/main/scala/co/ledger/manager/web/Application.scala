@@ -26,7 +26,7 @@ import scala.scalajs.js.JSApp
 
 object Application extends JSApp{
 
-  val httpClient = new JQHttpClient("http://localhost:3001/update")// new JQHttpClient("https://api.ledgerwallet.com/update")
+  val httpClient = new JQHttpClient("https://api.ledgerwallet.com/update") //new JQHttpClient("http://localhost:3001/update")// new JQHttpClient("https://api.ledgerwallet.com/update")
   val webSocketFactory = new JsWebSocketFactory(URI.create("wss://api.ledgerwallet.com/update"))
   @scala.scalajs.js.annotation.JSExport
   override def main(): Unit = {

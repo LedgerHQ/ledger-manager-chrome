@@ -1,7 +1,12 @@
 package co.ledger.manager.web.components
 
-import biz.enef.angulate.Directive
+import biz.enef.angulate.{Directive, Scope}
 import biz.enef.angulate.Module.RichModule
+import biz.enef.angulate.core.{Attributes, JQLite, Location}
+
+import scala.scalajs.js
+import scala.scalajs.js.UndefOr
+import scala.scalajs.js.annotation.ScalaJSDefined
 
 /**
   *
@@ -33,10 +38,37 @@ import biz.enef.angulate.Module.RichModule
   * SOFTWARE.
   *
   */
-class LeftPanel extends Directive {
+class LeftPanel( $location: Location,
+                 $route: js.Dynamic) extends Directive {
   override def templateUrl: String = "/templates/components/left-panel.html"
+  override type ControllerType = js.Dynamic
+  override type ScopeType = LeftPanel.LeftPanelScope
+
+  val categories = js.Array(
+    js.Dynamic.literal(id = "apps", icon = "th-large", titleKey = "common.applications", path = "/old/apps/index/"),
+    js.Dynamic.literal(id = "firmwares", icon = "cog", titleKey = "common.firmwares", path = "/old/firmwares/index/")
+  )
+
+  override def controller(ctrl: ControllerType, scope: ScopeType, elem: JQLite, attrs: Attributes): Unit = {
+    scope.categories = categories
+    scope.selected = attrs("selectedCategory")
+    scope.navigate = {(path: String) =>
+      println(path)
+      $location.path(path)
+      $route.reload()
+    }
+  }
+
 }
 
 object LeftPanel {
+
+  @ScalaJSDefined
+  class LeftPanelScope extends js.Object {
+    var selected: UndefOr[String] = _
+    var categories: js.Array[js.Object with js.Dynamic] = _
+    var navigate: js.Function = _
+  }
+
   def init(module: RichModule) = module.directiveOf[LeftPanel]("leftPanel")
 }

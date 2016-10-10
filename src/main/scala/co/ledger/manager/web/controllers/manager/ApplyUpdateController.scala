@@ -4,24 +4,24 @@ import java.io.StringWriter
 import java.util.Date
 
 import biz.enef.angulate.Module.RichModule
-import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
+import biz.enef.angulate.{Controller, Scope}
 import co.ledger.manager.web.Application
 import co.ledger.manager.web.core.filesystem.ChromeFileSystem
-import co.ledger.manager.web.core.utils.PermissionsHelper
+import co.ledger.manager.web.core.utils.{PermissionsHelper, UrlEncoder}
 import co.ledger.manager.web.services.{DeviceService, WindowService}
-import co.ledger.wallet.core.device.{Device, DeviceFactory}
 import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
+import co.ledger.wallet.core.device.ethereum.LedgerApi
 import co.ledger.wallet.core.device.ethereum.LedgerCommonApiInterface.LedgerApiException
-import co.ledger.wallet.core.device.ethereum.{LedgerApi, LedgerCommonApiInterface}
+import co.ledger.wallet.core.device.{Device, DeviceFactory}
 import co.ledger.wallet.core.net.WebSocket
 import co.ledger.wallet.core.utils.HexUtils
 import co.ledger.wallet.core.utils.logs.LogExporter
 import org.json.JSONObject
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSON
 import scala.util.{Failure, Success}
 /**
@@ -63,7 +63,7 @@ class ApplyUpdateController(val windowService: WindowService,
 
   js.Dynamic.global.console.log($routeParams)
 
-  private val product = $routeParams("product")
+  private val product = UrlEncoder.decode($routeParams("product"))
   private val productName = js.Dynamic.global.decodeURIComponent($routeParams("name")).asInstanceOf[String]
 
   var mode = "wait"

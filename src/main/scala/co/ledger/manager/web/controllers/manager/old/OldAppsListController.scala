@@ -88,6 +88,11 @@ class OldAppsListController(val windowService: WindowService,
   def icon(name: String) =
     js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/icon_placeholder.png")
 
+  def navigateNotes(name: String) = {
+    $location.path(s"/old/notes/applications/$name")
+    $route.reload()
+  }
+
   def refresh(): Unit = {
     applications = js.Array[js.Dictionary[js.Any]]()
     _loading = true
