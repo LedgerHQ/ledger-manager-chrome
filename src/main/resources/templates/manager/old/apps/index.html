@@ -1,5 +1,5 @@
 <div class="panel-view" ng-controller="OldAppsListController as ctrl">
-    <left-panel selected-category="apps"></left-panel>
+    <left-panel selected-category="apps" on-refresh="ctrl.fullRefresh()"></left-panel>
     <div class="right-panel list-panel scrollable" ng-hide="ctrl.isLoading() || ctrl.isEmpty()">
 
         <div class="list-item"  ng-repeat="app in ctrl.getApplications()">
@@ -9,12 +9,12 @@
                 <p>Version {{app.version}}</p>
             </div>
             <div class="spacer"></div>
-            <a ng-show="app.release_note.length > 0" translate>old.common.release_notes</a>
+            <a ng-show="app.release_note.length > 0" ng-click="ctrl.navigateNotes(app.identifier)" translate>old.common.release_notes</a>
             <div>
-                <div class="round-button green">
+                <div class="round-button green" ng-click="ctrl.install(app)">
                     <i class="fa fa-arrow-down" aria-hidden="true"></i>
                 </div>
-                <div class="round-button grey">
+                <div class="round-button grey" ng-click="ctrl.uninstall(app)">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </div>
             </div>
@@ -35,7 +35,7 @@
         </h1>
     </div>
     <div class="right-panel loading-panel scrollable"  ng-show="ctrl.isLoading()">
-        <spinner></spinner>
+        <spinner  ng-show="ctrl.isLoading()"></spinner>
         <h1 translate>old.apps.loading</h1>
         <p translate>common.please_wait</p>
     </div>

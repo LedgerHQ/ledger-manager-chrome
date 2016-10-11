@@ -25,6 +25,7 @@ common:
   please_wait: Please wait this may take a few moments.
   applications: applications
   firmwares: firmwares
+  need_help: Need assistance?
 
 left_panel:
   applications: Application
@@ -33,6 +34,10 @@ left_panel:
   my_device: My device
   last_update: Last update
 
+
+launch:
+  to_begin: To begin, connect your Ledger Wallet.
+  if_asked_enter_pin: If asked, enter your PIN code to unlock your device.
 
 old:
   common:

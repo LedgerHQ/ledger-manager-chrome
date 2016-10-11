@@ -1,0 +1,37 @@
+@import (reference) "../constants";
+
+.launch-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex-grow: 1;
+  flex-direction: column;
+
+  > img {
+    margin-bottom: @metrics-almost-medium-padding;
+  }
+
+  > h1 {
+    margin-bottom: @metrics-almost-small-padding;
+    color: @color-black;
+    font-size: @font-size-medium;
+  }
+
+  > h2 {
+    color: @color-dark-grey;
+    font-size: @font-size-small;
+  }
+
+  > a {
+    position: absolute;
+    bottom: @metrics-large-padding;
+    color: @color-soft-grey;
+    font-size: @font-size-very-small;
+
+    &:hover {
+      cursor: pointer;
+      color: darken(@color-soft-grey, @color-default-darken-value);
+    }
+  }
+}

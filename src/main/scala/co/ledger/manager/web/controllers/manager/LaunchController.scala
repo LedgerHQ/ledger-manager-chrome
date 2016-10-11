@@ -5,7 +5,7 @@ import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.Location
 import biz.enef.angulate.ext.Route
 import co.ledger.manager.web.controllers.WindowController
-import co.ledger.manager.web.services.{DeviceService, WindowService}
+import co.ledger.manager.web.services.{DeviceService, SessionService, WindowService}
 import co.ledger.wallet.core.device.{Device, DeviceFactory}
 import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
 import co.ledger.wallet.core.device.ethereum.LedgerApi
@@ -46,6 +46,7 @@ import scala.util.{Failure, Random, Success}
   */
 class LaunchController(val windowService: WindowService,
                        deviceService: DeviceService,
+                       sessionService: SessionService,
                        $scope: Scope,
                        $route: js.Dynamic,
                        $location: Location) extends Controller with ManagerController {
@@ -70,12 +71,14 @@ class LaunchController(val windowService: WindowService,
   }
 
   def connectDevice(device: Device): Unit = {
-    device.connect() flatMap {(_) =>
+    device.connect() flatMap { (_) =>
       LedgerApi(device).getFirmwareVersion()
+    } flatMap {(version) =>
+      sessionService.startNewSessions(LedgerApi(device))
     } onComplete {
       case Success(_) =>
         deviceService.registerDevice(device)
-        $location.path("/applist")
+        $location.path("/old/apps/index/")
         $route.reload()
       case Failure(ex) =>
         startDeviceDiscovery()

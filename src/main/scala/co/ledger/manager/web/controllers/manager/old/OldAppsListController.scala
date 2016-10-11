@@ -1,18 +1,21 @@
 package co.ledger.manager.web.controllers.manager.old
 
+import java.util.Date
+
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
 import co.ledger.manager.web.Application
-import co.ledger.manager.web.controllers.manager.ManagerController
+import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
 import co.ledger.manager.web.core.net.JQHttpClient
-import co.ledger.manager.web.services.{DeviceService, WindowService}
+import co.ledger.manager.web.core.utils.UrlEncoder
+import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
 import org.scalajs.dom.raw.XMLHttpRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.scalajs.js.JSON
+import scala.scalajs.js.{JSON, timers}
 import scala.util.{Failure, Success}
 
 /**
@@ -47,37 +50,22 @@ import scala.util.{Failure, Success}
   */
 class OldAppsListController(val windowService: WindowService,
                                 deviceService: DeviceService,
-                                $scope: Scope,
+                            val $scope: Scope,
                                 $location: Location,
-                                $route: js.Dynamic) extends Controller with ManagerController {
+                                $route: js.Dynamic,
+                            val apiService: ApiService) extends Controller
+  with ManagerController with ApiDependantController {
 
-  var applications = js.Array[js.Dictionary[js.Any]]()
+  var applications = js.Array[ApiService.App]()
   var images = scala.collection.mutable.Map[String, js.Any]()
 
-  def fetchApplications(): Future[Unit] = {
-    val provider =
-      if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
-        "?provider=ledger"
-      else
-        ""
-    Application.httpClient.get("/applications" + provider).json map {
-      case (json, _) =>
-        if (json.has("nanos")) {
-          val apps = json.getJSONArray("nanos")
-          applications = JSON.parse(apps.toString).asInstanceOf[js.Array[js.Dictionary[js.Any]]]
-        }
-    }
-  }
-
-  var _loading = true
-  def isLoading() = _loading
   def isEmpty() = getApplications().length == 0
 
   def isInDevMode() = Application.developerMode
 
   def getApplications() = {
     applications.array.filter {(item) =>
-     isInDevMode() || !item.dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
+     isInDevMode() || !item.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
     }
   }
 
@@ -89,24 +77,38 @@ class OldAppsListController(val windowService: WindowService,
     js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/icon_placeholder.png")
 
   def navigateNotes(name: String) = {
-    $location.path(s"/old/notes/applications/$name")
+    $location.path(s"/old/notes/apps/${UrlEncoder.encode(name)}")
     $route.reload()
   }
 
-  def refresh(): Unit = {
-    applications = js.Array[js.Dictionary[js.Any]]()
-    _loading = true
-    fetchApplications() onComplete {
-      case Success(_) =>
-        _loading = false
-        $scope.$apply()
-      case Failure(ex) =>
-        ex.printStackTrace()
-    }
+  def install(app: js.Dynamic): Unit = {
+    val path = s"/old/apply/install/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    $location.path(path)
+    $route.reload()
   }
 
-  refresh()
+  def uninstall(app: js.Dynamic): Unit = {
+    val path = s"/old/apply/uninstall/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}/"
+    $location.path(path)
+    $route.reload()
+  }
 
+  override def onBeforeRefresh(): Unit = {
+    println("YO")
+    applications = js.Array()
+    js.Dynamic.global.console.log(applications)
+  }
+
+
+  override def onAfterRefresh(): Unit = {
+    applications = apiService.applications.value.flatMap(_.toOption).getOrElse(js.Array())
+    js.Dynamic.global.console.log(applications)
+  }
+
+  override def fullRefresh(): Unit = super.fullRefresh()
+  override def isLoading(): Boolean = super.isLoading()
+
+  refresh()
 }
 
 object OldAppsListController {

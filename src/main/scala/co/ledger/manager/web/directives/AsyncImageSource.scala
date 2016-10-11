@@ -69,8 +69,10 @@ class AsyncImageSource extends Directive {
       xhr.open("GET", source, true)
       xhr.responseType = "blob"
       xhr.onload = {(e: js.Any) =>
-        AsyncImageSource.Cache(source) = xhr.response
-        applyBlob(xhr.response)
+        if(xhr.status == 200) {
+          AsyncImageSource.Cache(source) = xhr.response
+          applyBlob(xhr.response)
+        }
       }
       xhr.send()
     } else {

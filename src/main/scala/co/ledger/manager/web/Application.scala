@@ -8,13 +8,13 @@ import biz.enef.angulate.core.HttpService
 import biz.enef.angulate.ext.RouteProvider
 import co.ledger.manager.web.components._
 import co.ledger.manager.web.controllers.WindowController
-import co.ledger.manager.web.controllers.manager.old.OldAppsListController
+import co.ledger.manager.web.controllers.manager.old.{OldApplyScriptController, OldAppsListController, OldNotesController}
 import co.ledger.manager.web.controllers.manager.{AppListController, ApplyUpdateController, BatchAppListController, LaunchController}
 import co.ledger.manager.web.core.net.{JQHttpClient, JsWebSocketFactory}
 import co.ledger.manager.web.core.utils.ChromePreferences
 import co.ledger.manager.web.directives.AsyncImageSource
 import co.ledger.manager.web.i18n.{I18n, TranslateProvider}
-import co.ledger.manager.web.services.{DeviceService, SessionService, WindowService}
+import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 import co.ledger.wallet.core.utils.logs._
 
 import scala.scalajs.js
@@ -26,7 +26,7 @@ import scala.scalajs.js.JSApp
 
 object Application extends JSApp{
 
-  val httpClient = new JQHttpClient("https://api.ledgerwallet.com/update") //new JQHttpClient("http://localhost:3001/update")// new JQHttpClient("https://api.ledgerwallet.com/update")
+  val httpClient = new JQHttpClient("http://localhost:3001/update")// new JQHttpClient("https://api.ledgerwallet.com/update")
   val webSocketFactory = new JsWebSocketFactory(URI.create("wss://api.ledgerwallet.com/update"))
   @scala.scalajs.js.annotation.JSExport
   override def main(): Unit = {
@@ -56,12 +56,16 @@ object Application extends JSApp{
     AppListController.init(module)
     BatchAppListController.init(module)
     ApplyUpdateController.init(module)
+
     OldAppsListController.init(module)
+    OldNotesController.init(module)
+    OldApplyScriptController.init(module)
 
     // Services
     WindowService.init(module)
     DeviceService.init(module)
     SessionService.init(module)
+    ApiService.init(module)
 
     // Filters
 

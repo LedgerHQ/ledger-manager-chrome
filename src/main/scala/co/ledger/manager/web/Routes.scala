@@ -42,10 +42,10 @@ object Routes {
       .when("/apply/:script/:product/:name/:params", Route(templateUrl = "/templates/manager/apply_update.html"))
       // Old UI for first Nano S version
       .when("/old/apps/index/", Route(templateUrl = "/templates/manager/old/apps/index.html"))
-      .when("/old/notes/:product_type/:identifier/", Route(templateUrl = "/templates/manager/old/notes.html"))
+      .when("/old/notes/:category/:identifier/", Route(templateUrl = "/templates/manager/old/notes.html"))
       .when("/old/firmwares/index/", Route(templateUrl = "/templates/manager/old/firmwares/index.html"))
       .when("/old/plug/", Route(templateUrl = "/templates/manager/old/plug.html"))
-      .when("/old/apply/:script/:product/:name/:params", Route(templateUrl = "/templates/manager/old/apply.html"))
+      .when("/old/apply/:script/:category/:name/", Route(templateUrl = "/templates/manager/old/apply.html"))
       .otherwise( Route( redirectTo = "/launch/"))
   }
 

@@ -74,9 +74,14 @@ left-panel {
     }
 
     > .item.selected {
-      pointer-events: none;
       > .selector {
         background-color: @color-action-green;
+        &:hover {
+          cursor: pointer;
+          > .selector {
+            background-color: @color-action-green;
+          }
+        }
       }
     }
 

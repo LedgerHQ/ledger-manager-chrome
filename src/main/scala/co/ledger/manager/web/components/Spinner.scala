@@ -5,9 +5,11 @@ import java.util.Date
 import biz.enef.angulate.{Directive, Scope}
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.{Attributes, JQLite}
+import co.ledger.manager.web.components.Spinner.SpinnerScope
 import org.scalajs.dom
 
 import scala.scalajs.js
+import scala.scalajs.js.annotation.{JSName, ScalaJSDefined}
 
 /**
   *
@@ -39,11 +41,11 @@ import scala.scalajs.js
   * SOFTWARE.
   *
   */
-class Spinner extends Directive {
+class Spinner($parse: js.Dynamic) extends Directive {
   import js.Dynamic.{ global => g, newInstance => jsnew }
   import js.timers._
 
-  override type ScopeType = Scope
+  override type ScopeType = SpinnerScope
 
   override def template: String =
     """
@@ -52,30 +54,58 @@ class Spinner extends Directive {
       |</div>
     """.stripMargin
 
-
   override def postLink(scope: ScopeType, element: JQLite, attrs: Attributes): Unit = {
-    if (_interval == null) {
-      _canvas =  element.find("#canvas").asInstanceOf[JQLite](0).asInstanceOf[dom.html.Canvas]
-      _ctx = _canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
-      _startTime = new Date().getTime
-      _interval = js.Dynamic.global.requestAnimationFrame({() =>
-        draw(_ctx)
+
+    val isVisible: js.Function0[Boolean] = {() =>
+      var result = js.isUndefined(attrs("ngShow")) && js.isUndefined(attrs("ngHide"))
+      if (!js.isUndefined(attrs("ngShow")))
+        result =  result || $parse(attrs.apply("ngShow"))(scope).asInstanceOf[Boolean]
+      if (!js.isUndefined(attrs("ngHide")))
+        result = result || !$parse(attrs.apply("ngHide"))(scope).asInstanceOf[Boolean]
+      result
+    }
+
+    def startAnimation(): Unit = {
+      scope.destroyed = false
+      scope.canvas =  element.find("#canvas").asInstanceOf[JQLite](0).asInstanceOf[dom.html.Canvas]
+      scope.ctx = scope.canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
+      scope.startTime = new Date().getTime
+      scope.revolutionTime = 1000
+
+      scope.interval = js.Dynamic.global.requestAnimationFrame({() =>
+        draw(scope)
       })
       scope.$on("$destroy", {() =>
-        _destroyed = true
+        scope.destroyed = true
       })
     }
+    def startAnimationIfNecessary(): Unit = {
+      if (isVisible()) {
+        startAnimation()
+      } else {
+        scope.destroyed = true
+      }
+    }
+    scope.$watch(attrs("ngShow"), {() =>
+      startAnimationIfNecessary()
+    })
+    startAnimationIfNecessary()
   }
 
-  private def draw(ctx: dom.CanvasRenderingContext2D): Unit = {
-    val width = _canvas.width
-    val height = _canvas.height
+  private def draw(scope: ScopeType): Unit = {
+    val ctx = scope.ctx
+    val canvas = scope.canvas
+    val startTime = scope.startTime
+    val revolutionTime = scope.revolutionTime
+
+    val width = canvas.width
+    val height = canvas.height
     val lineWidth = 3
     val radius = Math.min(width, height) / 2 - lineWidth
     val x = width / 2
     val y = height / 2
 
-    val t = new Date().getTime - _startTime
+    val t = new Date().getTime - startTime
 
     ctx.clearRect(0, 0, width, height)
     ctx.save()
@@ -84,8 +114,8 @@ class Spinner extends Directive {
     ctx.translate(x, y)
 
     // Rotate 1 degree
-    val e = (t % _revolutionTime).toDouble / _revolutionTime.toDouble
-    def interpolation(e: Double) = Math.sin(Math.PI/2 * e) + 1
+    val e = (t % revolutionTime).toDouble / revolutionTime.toDouble
+    def interpolation(e: Double) = -Math.cos(Math.PI/2 * e) + 1
     def easing(): Double = {
       if (e >= 0.5d) {
         (-interpolation(-2 * e + 2) + 2) / 2
@@ -113,22 +143,27 @@ class Spinner extends Directive {
     ctx.fill()
     ctx.restore()
 
-    if (!_destroyed) {
+
+    if (!scope.destroyed) {
       js.Dynamic.global.requestAnimationFrame({ () =>
-        draw(_ctx)
+        draw(scope)
       })
     }
   }
-
-  private var _destroyed = false
-  private var _startTime = 0L
-  private var _canvas: dom.html.Canvas = null
-  private var _ctx: dom.CanvasRenderingContext2D = null
-  private var _interval: js.Any = null
-  private var _revolutionTime = 1000
 }
 
 object Spinner {
+
+  @JSName("SpinnerScope")
+  @js.native
+  class SpinnerScope extends Scope {
+    var destroyed: Boolean = js.native
+    var startTime: Long = js.native
+    var canvas: dom.html.Canvas = js.native
+    var ctx: dom.CanvasRenderingContext2D = js.native
+    var interval: js.Any = js.native
+    var revolutionTime: Long = js.native
+  }
 
   def init(module: RichModule) = module.directiveOf[Spinner]("spinner")
 

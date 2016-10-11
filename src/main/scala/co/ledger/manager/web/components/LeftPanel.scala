@@ -3,9 +3,10 @@ package co.ledger.manager.web.components
 import biz.enef.angulate.{Directive, Scope}
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.{Attributes, JQLite, Location}
+import co.ledger.manager.web.components.LeftPanel.LeftPanelScope
 
 import scala.scalajs.js
-import scala.scalajs.js.UndefOr
+import scala.scalajs.js.{Dictionary, UndefOr}
 import scala.scalajs.js.annotation.ScalaJSDefined
 
 /**
@@ -39,7 +40,8 @@ import scala.scalajs.js.annotation.ScalaJSDefined
   *
   */
 class LeftPanel( $location: Location,
-                 $route: js.Dynamic) extends Directive {
+                 $route: js.Dynamic,
+                 $parse: js.Dynamic) extends Directive {
   override def templateUrl: String = "/templates/components/left-panel.html"
   override type ControllerType = js.Dynamic
   override type ScopeType = LeftPanel.LeftPanelScope
@@ -49,13 +51,20 @@ class LeftPanel( $location: Location,
     js.Dynamic.literal(id = "firmwares", icon = "cog", titleKey = "common.firmwares", path = "/old/firmwares/index/")
   )
 
-  override def controller(ctrl: ControllerType, scope: ScopeType, elem: JQLite, attrs: Attributes): Unit = {
+
+  override def isolateScope: Dictionary[String] = js.Dictionary[String](
+    "onRefresh" -> "&"
+  )
+
+  override def postLink(scope: ScopeType, elem: JQLite, attrs: Attributes): Unit = {
     scope.categories = categories
     scope.selected = attrs("selectedCategory")
     scope.navigate = {(path: String) =>
-      println(path)
       $location.path(path)
       $route.reload()
+    }
+    scope.refresh = {() =>
+      scope.asInstanceOf[js.Dynamic].onRefresh()
     }
   }
 
@@ -68,6 +77,7 @@ object LeftPanel {
     var selected: UndefOr[String] = _
     var categories: js.Array[js.Object with js.Dynamic] = _
     var navigate: js.Function = _
+    var refresh: js.Function = _
   }
 
   def init(module: RichModule) = module.directiveOf[LeftPanel]("leftPanel")

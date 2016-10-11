@@ -1,0 +1,12 @@
+<div class="panel-view" ng-controller="OldApplyScriptController as ctrl">
+    <left-panel selected-category="{{ctrl.category}}" on-refresh="ctrl.fullRefresh()"></left-panel>
+    <div class="right-panel loading-panel scrollable">
+        <spinner></spinner>
+        <h1 translate>old.apps.loading</h1>
+        <p translate>common.please_wait</p>
+        <div class="sticker-label stick-to-bottom">
+            <h1>identifier</h1>
+            <p>5FF6...DA86</p>
+        </div>
+    </div>
+</div>
