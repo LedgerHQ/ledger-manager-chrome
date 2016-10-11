@@ -71,7 +71,9 @@ trait ApiDependantController {
         $scope.$apply()
       }
     }
-    apiService.applications onComplete {
+    apiService.firmwares flatMap {(_) =>
+      apiService.applications
+    } onComplete {
       case Success(apps) =>
         onAfterRefresh()
         applyUi()

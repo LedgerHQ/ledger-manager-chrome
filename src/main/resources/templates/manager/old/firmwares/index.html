@@ -1,6 +1,38 @@
-<div class="panel-view" >
-    <left-panel selected-category="firmwares"></left-panel>
-    <div class="right-panel list-panel scrollable">
-       
+<div class="panel-view" ng-controller="OldFirmwaresListController as ctrl">
+    <left-panel selected-category="firmwares" on-refresh="ctrl.fullRefresh()"></left-panel>
+    <div class="right-panel list-panel scrollable" ng-hide="ctrl.isLoading() || ctrl.isEmpty()">
+
+        <div class="list-item"  ng-repeat="firmware in ctrl.getFirmwares()">
+            <img src="images/icons/ic_firmware.png" width="50" height="50"/>
+            <div>
+                <h1><i style="text-transform: capitalize" translate>common.firmware</i> <span ng-show="app.developer" translate>old.common.dev_version</span></h1>
+                <p>Version {{firmware.name}}</p>
+            </div>
+            <div class="spacer"></div>
+            <div>
+                <div class="round-button green" ng-click="ctrl.navigateNotes(firmware.name)">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="list-placeholder"></div>
+        <div class="footer">
+            <a ng-click="ctrl.toggleDevMode()">
+                <span ng-show="!ctrl.isInDevMode()" translate>old.common.show_dev</span>
+                <span ng-show="ctrl.isInDevMode()" translate>old.common.hide_dev</span>
+            </a>
+        </div>
+
+    </div>
+    <div class="right-panel single-text-panel scrollable"  ng-hide="ctrl.isLoading() || !ctrl.isEmpty()">
+        <h1 translate>
+            common.no_items_to_display
+        </h1>
+    </div>
+    <div class="right-panel loading-panel scrollable"  ng-show="ctrl.isLoading()">
+        <spinner  ng-show="ctrl.isLoading()"></spinner>
+        <h1 translate>old.apps.loading</h1>
+        <p translate>common.please_wait</p>
     </div>
 </div>

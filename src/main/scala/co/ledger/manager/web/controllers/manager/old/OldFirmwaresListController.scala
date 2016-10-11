@@ -3,14 +3,16 @@ package co.ledger.manager.web.controllers.manager.old
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
+import co.ledger.manager.web.Application
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
+import co.ledger.manager.web.core.utils.UrlEncoder
 import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
 
 import scala.scalajs.js
 
 /**
   *
-  * OldApplyScriptController
+  * OldFirmwaresListController
   * ledger-manager-chrome
   *
   * Created by Pierre Pollastri on 11/10/2016.
@@ -38,29 +40,45 @@ import scala.scalajs.js
   * SOFTWARE.
   *
   */
-class OldApplyScriptController(val windowService: WindowService,
-                               deviceService: DeviceService,
-                               val $scope: Scope,
-                               $location: Location,
-                               $route: js.Dynamic,
-                               $routeParams: js.Dictionary[String],
-                               val apiService: ApiService) extends Controller
+class OldFirmwaresListController(val windowService: WindowService,
+                                     deviceService: DeviceService,
+                                 val $scope: Scope,
+                                     $location: Location,
+                                     $route: js.Dynamic,
+                                 val apiService: ApiService) extends Controller
   with ManagerController with ApiDependantController {
 
-  val category = {
-    $routeParams("category") match {
-      case "osu" => "firmwares"
-      case "firmware" => "firmwares"
-      case others => others
+  var firmwares = js.Array[ApiService.Firmware]()
+
+  def getFirmwares() = {
+    firmwares.array.filter {(item) =>
+      isInDevMode() || !item.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
     }
   }
+  def isEmpty() = getFirmwares().length == 0
+  def toggleDevMode() = {
+    Application.developerMode = !Application.developerMode
+  }
+  def isInDevMode() = Application.developerMode
+  override def isLoading(): Boolean = super.isLoading()
+  override def fullRefresh(): Unit = super.fullRefresh()
+  override def onBeforeRefresh(): Unit = {
+    super.onBeforeRefresh()
+    firmwares = js.Array()
+  }
+  override def onAfterRefresh(): Unit = {
+    super.onAfterRefresh()
+    firmwares = apiService.firmwares.value.flatMap(_.toOption).getOrElse(js.Array())
+    js.Dynamic.global.console.log("Firmwares", firmwares)
+  }
+  def navigateNotes(name: String) = {
+    $location.path(s"/old/notes/firmwares/${UrlEncoder.encode(name)}")
+    $route.reload()
+  }
 
-  val product = $routeParams("category")
-
+  refresh()
 }
 
-object OldApplyScriptController {
-
-  def init(module: RichModule) = module.controllerOf[OldApplyScriptController]("OldApplyScriptController")
-
+object OldFirmwaresListController {
+  def init(module: RichModule) = module.controllerOf[OldFirmwaresListController]("OldFirmwaresListController")
 }

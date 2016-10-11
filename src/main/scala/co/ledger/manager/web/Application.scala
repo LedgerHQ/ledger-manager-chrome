@@ -8,7 +8,7 @@ import biz.enef.angulate.core.HttpService
 import biz.enef.angulate.ext.RouteProvider
 import co.ledger.manager.web.components._
 import co.ledger.manager.web.controllers.WindowController
-import co.ledger.manager.web.controllers.manager.old.{OldApplyScriptController, OldAppsListController, OldNotesController}
+import co.ledger.manager.web.controllers.manager.old.{OldApplyScriptController, OldAppsListController, OldFirmwaresListController, OldNotesController}
 import co.ledger.manager.web.controllers.manager.{AppListController, ApplyUpdateController, BatchAppListController, LaunchController}
 import co.ledger.manager.web.core.net.{JQHttpClient, JsWebSocketFactory}
 import co.ledger.manager.web.core.utils.ChromePreferences
@@ -58,6 +58,7 @@ object Application extends JSApp{
     ApplyUpdateController.init(module)
 
     OldAppsListController.init(module)
+    OldFirmwaresListController.init(module)
     OldNotesController.init(module)
     OldApplyScriptController.init(module)
 

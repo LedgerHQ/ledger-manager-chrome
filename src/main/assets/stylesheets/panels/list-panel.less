@@ -60,6 +60,48 @@
 
     }
 
+    > div div.thin-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      margin-right: 5px;
+      color: @color-white;
+      font-size: 11px;
+      padding-left: 13px;
+      padding-right: 13px;
+      height: 24px;
+
+      > i {
+        display: block;
+        text-transform: uppercase;
+        color: @color-white;
+        font-size: @font-size-very-small;
+        font-weight: @font-weight-regular;
+      }
+
+      &.green {
+        background-color: @color-action-green;
+
+        &:hover {
+          cursor: pointer;
+          background-color: darken(@color-action-green, @color-default-darken-value);
+        }
+
+      }
+
+      &.grey {
+        background-color: @color-light-grey;
+
+        &:hover {
+          cursor: pointer;
+          background-color: darken(@color-light-grey, @color-default-darken-value);
+        }
+
+      }
+
+    }
+
     > div div.round-button {
       display: inline-flex;
       align-items: center;
@@ -102,6 +144,31 @@
 
     .spacer {
       flex-grow: 1;
+    }
+
+  }
+
+  > .list-detail {
+    flex-grow: 1;
+
+    padding: 40px;
+    padding-top: 0;
+
+    > .detail-item {
+      > h1 {
+        text-transform: uppercase;
+        font-size: @font-size-very-small;
+        color: @color-soft-grey;
+        font-weight: @font-weight-semibold;
+        margin-bottom: 10px;
+      }
+
+      > p {
+        line-height: 24px;
+        font-weight: @font-weight-regular;
+        font-size: @font-size-medium;
+        color: @color-black;
+      }
     }
 
   }

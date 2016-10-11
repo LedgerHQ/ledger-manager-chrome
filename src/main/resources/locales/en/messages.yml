@@ -25,6 +25,7 @@ common:
   please_wait: Please wait this may take a few moments.
   applications: applications
   firmwares: firmwares
+  firmware: firmware
   need_help: Need assistance?
 
 left_panel:
@@ -47,3 +48,5 @@ old:
     dev_version: (developer)
   apps:
     loading: Updating store...
+  firmwares:
+    install: install

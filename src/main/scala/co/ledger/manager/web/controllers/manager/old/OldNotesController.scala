@@ -3,7 +3,9 @@ package co.ledger.manager.web.controllers.manager.old
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
+import co.ledger.manager.web.Application
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
+import co.ledger.manager.web.core.utils.UrlEncoder
 import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
 
 import scala.scalajs.js
@@ -54,9 +56,59 @@ class OldNotesController(val windowService: WindowService,
   override def onAfterRefresh(): Unit = {}
 
   val category = $routeParams("category")
+  val identifier = $routeParams("identifier")
 
   println(category)
 
+  def install(app: js.Dynamic): Unit = {
+    val path = s"/old/apply/install/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    $location.path(path)
+    $route.reload()
+  }
+
+  def uninstall(app: js.Dynamic): Unit = {
+    val path = s"/old/apply/uninstall/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}/"
+    $location.path(path)
+    $route.reload()
+  }
+
+  def installOsu(app: js.Dynamic): Unit = {
+    val path = s"/old/apply/install/osu/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    $location.path(path)
+    $route.reload()
+  }
+
+  def installFirmware(app: js.Dynamic): Unit = {
+    val path = s"/old/apply/install/firmware/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    $location.path(path)
+    $route.reload()
+  }
+
+  def icon(name: String) =
+    js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/icon_placeholder.png")
+
+  val app = {
+    if (category == "apps") {
+      apiService.applications.value.get.get.find(_.asInstanceOf[js.Dynamic].name == identifier).get
+    } else {
+      js.Dynamic.literal(icon="")
+    }
+  }
+
+  val firmware = {
+    if (category == "firmwares") {
+      apiService.firmwares.value.get.get.find(_.asInstanceOf[js.Dynamic].name == identifier).get
+    } else {
+      js.Dynamic.literal()
+    }
+  }
+
+  val content = js.Array(
+    js.Dynamic.literal(
+      title = "Release notes",
+      text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    )
+  )
 
 }
 
