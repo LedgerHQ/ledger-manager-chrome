@@ -27,6 +27,7 @@ common:
   firmwares: firmwares
   firmware: firmware
   need_help: Need assistance?
+  identifier: identifier
 
 left_panel:
   applications: Application
@@ -50,3 +51,11 @@ old:
     loading: Updating store...
   firmwares:
     install: install
+  apply:
+    install_osu: Installing OS updater...
+    check_hash: Check and confirm the update identifier on your device.
+    install_firmware: Installing firmware...
+    install_application: Installing application...
+    confirm_install: If asked, confirm the installation on your device.
+    uninstall_application: Removing application...
+    confirm_uninstall: If asked, confirm the removal on your device.

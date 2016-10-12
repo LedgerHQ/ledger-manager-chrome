@@ -16,11 +16,13 @@
     margin-bottom: @metrics-almost-small-padding;
     color: @color-black;
     font-size: @font-size-medium;
+    font-weight: @font-weight-regular;
   }
 
   > h2 {
     color: @color-dark-grey;
     font-size: @font-size-small;
+    font-weight: @font-weight-regular;
   }
 
   > a {
@@ -28,10 +30,11 @@
     bottom: @metrics-large-padding;
     color: @color-soft-grey;
     font-size: @font-size-very-small;
+    font-weight: @font-weight-regular;
 
     &:hover {
       cursor: pointer;
-      color: darken(@color-soft-grey, @color-default-darken-value);
+      color: darken(@color-soft-grey, @color-strong-darken-value);
     }
   }
 }
