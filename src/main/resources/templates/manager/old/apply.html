@@ -1,12 +1,42 @@
 <div class="panel-view" ng-controller="OldApplyScriptController as ctrl">
     <left-panel selected-category="{{ctrl.category}}" on-refresh="ctrl.fullRefresh()"></left-panel>
-    <div class="right-panel loading-panel scrollable">
+
+    <div class="right-panel loading-panel scrollable" ng-if="ctrl.script == 'install' && ctrl.product == 'osu' && ctrl.hasError == false">
         <spinner></spinner>
-        <h1 translate>old.apps.loading</h1>
-        <p translate>common.please_wait</p>
+        <h1 translate>old.apply.install_osu</h1>
+        <p translate>old.apply.check_hash</p>
         <div class="sticker-label stick-to-bottom">
-            <h1>identifier</h1>
-            <p>5FF6...DA86</p>
+            <h1 translate>common.identifier</h1>
+            <p>{{ctrl.ellipsize(ctrl.pkg.osu.hash)}}</p>
         </div>
     </div>
+
+    <div class="right-panel loading-panel scrollable" ng-if="ctrl.script == 'install' && ctrl.product == 'firmware' && ctrl.hasError == false">
+        <spinner></spinner>
+        <h1 translate>old.apply.install_firmware</h1>
+        <p translate>common.please_wait</p>
+    </div>
+
+    <div class="right-panel loading-panel scrollable" ng-if="ctrl.script == 'install' && ctrl.product == 'apps' && ctrl.hasError == false">
+        <spinner></spinner>
+        <h1 translate>old.apply.install_application</h1>
+        <p translate>old.apply.confirm_install</p>
+    </div>
+
+    <div class="right-panel loading-panel scrollable" ng-if="ctrl.script == 'uninstall' && ctrl.product == 'apps' && ctrl.hasError == false">
+        <spinner></spinner>
+        <h1 translate>old.apply.uninstall_application</h1>
+        <p translate>old.apply.confirm_uninstall</p>
+    </div>
+
+    <div class="right-panel error-panel" ng-if="ctrl.hasError == true">
+       <img src="images/icons/ic_error.png" />
+        <h1>ERROR</h1>
+        <p>TEXT</p>
+        <action-bottom-bar style="margin-top: 30px">
+            <lbutton text="logs" type="cancel" ng-click="ctrl.exportLogs()"></lbutton>
+            <lbutton text="Continue" ng-click="ctrl.next()"></lbutton>
+        </action-bottom-bar>
+    </div>
+
 </div>

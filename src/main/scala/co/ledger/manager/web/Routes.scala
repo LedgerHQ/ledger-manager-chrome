@@ -45,7 +45,7 @@ object Routes {
       .when("/old/notes/:category/:identifier/", Route(templateUrl = "/templates/manager/old/notes.html"))
       .when("/old/firmwares/index/", Route(templateUrl = "/templates/manager/old/firmwares/index.html"))
       .when("/old/plug/", Route(templateUrl = "/templates/manager/old/plug.html"))
-      .when("/old/apply/:script/:category/:name/", Route(templateUrl = "/templates/manager/old/apply.html"))
+      .when("/old/apply/:script/:category/:identifier/", Route(templateUrl = "/templates/manager/old/apply.html"))
       .otherwise( Route( redirectTo = "/launch/"))
   }
 

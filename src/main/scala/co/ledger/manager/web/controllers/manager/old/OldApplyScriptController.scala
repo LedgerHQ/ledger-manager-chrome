@@ -54,8 +54,26 @@ class OldApplyScriptController(val windowService: WindowService,
       case others => others
     }
   }
-
   val product = $routeParams("category")
+  val identifier = $routeParams("identifier")
+  val script = $routeParams("script")
+  var hasError = true
+  val pkg = {
+    product match {
+      case "osu" =>
+        apiService.firmwares.value.get.get.find(_.asInstanceOf[js.Dynamic].identifier == identifier).get.asInstanceOf[js.Dynamic]
+      case "firmware" =>
+        apiService.firmwares.value.get.get.find(_.asInstanceOf[js.Dynamic].identifier == identifier).get.asInstanceOf[js.Dynamic]
+      case others =>
+        apiService.applications.value.get.get.find(_.asInstanceOf[js.Dynamic].identifier == identifier).get.asInstanceOf[js.Dynamic]
+    }
+  }
+  println(product)
+  println(identifier)
+
+  def ellipsize(text: String): String = {
+    text.substring(0, 4) + "..." + text.substring(text.length - 4, text.length)
+  }
 
 }
 
