@@ -74,15 +74,15 @@ class OldAppsListController(val windowService: WindowService,
   }
 
   def icon(name: String) =
-    js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/icon_placeholder.png")
+    js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/ic_placeholder.png")
 
   def navigateNotes(identifier: String) = {
-    $location.path(s"/old/notes/apps/$identifier")
+    $location.path(s"/old/notes/apps/$identifier/")
     $route.reload()
   }
 
   def install(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/apps/${app.identifier}"
+    val path = s"/old/apply/install/apps/${app.identifier}/"
     $location.path(path)
     $route.reload()
   }
