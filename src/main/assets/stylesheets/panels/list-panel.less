@@ -151,8 +151,13 @@
   > .list-detail {
     flex-grow: 1;
 
-    padding: 40px;
-    padding-top: 0;
+    padding-top: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 40px;
+
+    display: flex;
+    flex-direction: column;
 
     > .detail-item {
       > h1 {
@@ -160,14 +165,30 @@
         font-size: @font-size-very-small;
         color: @color-soft-grey;
         font-weight: @font-weight-semibold;
-        margin-bottom: 10px;
+        margin-top: 20px;
+        margin-bottom: 5px;
       }
 
       > p {
+        margin-top: 10px;
         line-height: 24px;
         font-weight: @font-weight-regular;
         font-size: @font-size-medium;
         color: @color-black;
+      }
+    }
+
+    .spacer {
+      flex-grow: 1;
+    }
+
+    > a {
+      color: @color-dark-grey;
+      font-size: @font-size-very-small;
+
+      &:hover {
+        cursor: pointer;
+        color: darken(@color-dark-grey, @color-default-darken-value);
       }
     }
 

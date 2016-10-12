@@ -5,6 +5,7 @@ import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
 import co.ledger.manager.web.Application
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
+import co.ledger.manager.web.core.remarkable.Remarkable
 import co.ledger.manager.web.core.utils.UrlEncoder
 import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
 
@@ -58,28 +59,26 @@ class OldNotesController(val windowService: WindowService,
   val category = $routeParams("category")
   val identifier = $routeParams("identifier")
 
-  println(category)
-
   def install(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    val path = s"/old/apply/install/apps/$identifier"
     $location.path(path)
     $route.reload()
   }
 
   def uninstall(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/uninstall/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}/"
+    val path = s"/old/apply/uninstall/apps/${app.identifier.asInstanceOf[String]}/"
     $location.path(path)
     $route.reload()
   }
 
   def installOsu(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/osu/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    val path = s"/old/apply/install/osu/${app.identifier.asInstanceOf[String]}/"
     $location.path(path)
     $route.reload()
   }
 
   def installFirmware(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/firmware/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    val path = s"/old/apply/install/firmware/${app.identifier.asInstanceOf[String]}/"
     $location.path(path)
     $route.reload()
   }
@@ -87,9 +86,11 @@ class OldNotesController(val windowService: WindowService,
   def icon(name: String) =
     js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/icon_placeholder.png")
 
+  def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/help_center")
+
   val app = {
     if (category == "apps") {
-      apiService.applications.value.get.get.find(_.asInstanceOf[js.Dynamic].name == identifier).get
+      apiService.applications.value.get.get.find(_.asInstanceOf[js.Dynamic].identifier == identifier).get
     } else {
       js.Dynamic.literal(icon="")
     }
@@ -97,18 +98,20 @@ class OldNotesController(val windowService: WindowService,
 
   val firmware = {
     if (category == "firmwares") {
-      apiService.firmwares.value.get.get.find(_.asInstanceOf[js.Dynamic].name == identifier).get
+      apiService.firmwares.value.get.get.find(_.asInstanceOf[js.Dynamic].identifier == identifier).get
     } else {
       js.Dynamic.literal()
     }
   }
 
-  val content = js.Array(
-    js.Dynamic.literal(
-      title = "Release notes",
-      text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-    )
-  )
+  val content: String = {
+    category match {
+      case "apps" =>
+        if (js.isUndefined(app.asInstanceOf[js.Dynamic].notes)) "" else app.asInstanceOf[js.Dynamic].notes.asInstanceOf[String]
+      case "firmwares" =>
+        if (js.isUndefined(firmware.asInstanceOf[js.Dynamic].notes)) "" else firmware.asInstanceOf[js.Dynamic].notes.asInstanceOf[String]
+    }
+  }
 
 }
 

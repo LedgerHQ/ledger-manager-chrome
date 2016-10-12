@@ -34,12 +34,13 @@
                 </div>
             </div>
         </div>
-        <div class="list-item" style="padding-top: 30px; padding-bottom: 0px"></div>
+        <div class="list-item" style="padding-top: 0px; padding-bottom: 0px"></div>
         <div class="list-detail">
-            <div class="detail-item" ng-repeat="item in ctrl.content">
-                <h1>{{item.title}}</h1>
-                <p>{{item.text}}</p>
+            <div class="detail-item" mark-down="ctrl.content">
+
             </div>
+            <div class="spacer"></div>
+            <a ng-click="ctrl.openHelpCenter()" translate>common.need_help</a>
         </div>
     </div>
 </div>

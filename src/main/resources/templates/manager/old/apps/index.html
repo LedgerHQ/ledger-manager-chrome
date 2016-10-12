@@ -9,7 +9,7 @@
                 <p>Version {{app.version}}</p>
             </div>
             <div class="spacer"></div>
-            <a ng-show="app.release_note.length > 0" ng-click="ctrl.navigateNotes(app.identifier)" translate>old.common.release_notes</a>
+            <a ng-show="app.notes.length > 0" ng-click="ctrl.navigateNotes(app.identifier)" translate>old.common.release_notes</a>
             <div>
                 <div class="round-button green" ng-click="ctrl.install(app)">
                     <i class="fa fa-arrow-down" aria-hidden="true"></i>

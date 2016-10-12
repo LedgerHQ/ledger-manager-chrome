@@ -76,19 +76,19 @@ class OldAppsListController(val windowService: WindowService,
   def icon(name: String) =
     js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/icon_placeholder.png")
 
-  def navigateNotes(name: String) = {
-    $location.path(s"/old/notes/apps/${UrlEncoder.encode(name)}")
+  def navigateNotes(identifier: String) = {
+    $location.path(s"/old/notes/apps/$identifier")
     $route.reload()
   }
 
   def install(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}"
+    val path = s"/old/apply/install/apps/${app.identifier}"
     $location.path(path)
     $route.reload()
   }
 
   def uninstall(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/uninstall/apps/${UrlEncoder.encode(app.name.asInstanceOf[String])}/"
+    val path = s"/old/apply/uninstall/apps/${app.identifier}/"
     $location.path(path)
     $route.reload()
   }

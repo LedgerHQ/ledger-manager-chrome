@@ -12,7 +12,7 @@ import co.ledger.manager.web.controllers.manager.old.{OldApplyScriptController, 
 import co.ledger.manager.web.controllers.manager.{AppListController, ApplyUpdateController, BatchAppListController, LaunchController}
 import co.ledger.manager.web.core.net.{JQHttpClient, JsWebSocketFactory}
 import co.ledger.manager.web.core.utils.ChromePreferences
-import co.ledger.manager.web.directives.AsyncImageSource
+import co.ledger.manager.web.directives.{AsyncImageSource, MarkDown}
 import co.ledger.manager.web.i18n.{I18n, TranslateProvider}
 import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 import co.ledger.wallet.core.utils.logs._
@@ -49,6 +49,7 @@ object Application extends JSApp{
 
     // Directives
     AsyncImageSource.init(module)
+    MarkDown.init(module)
 
     // Controllers
     WindowController.init(module)
