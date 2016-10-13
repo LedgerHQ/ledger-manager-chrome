@@ -7,7 +7,7 @@ import co.ledger.manager.web.Application
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
 import co.ledger.manager.web.core.remarkable.Remarkable
 import co.ledger.manager.web.core.utils.UrlEncoder
-import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
+import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 
 import scala.scalajs.js
 
@@ -51,13 +51,23 @@ class OldNotesController(val windowService: WindowService,
   with ManagerController with ApiDependantController {
 
 
-
-  override def onBeforeRefresh(): Unit = {}
-
-  override def onAfterRefresh(): Unit = {}
-
   val category = $routeParams("category")
   val identifier = $routeParams("identifier")
+
+  override def onBeforeRefresh(): Unit = {
+
+  }
+
+  override def onAfterRefresh(): Unit = {}
+  override def fullRefresh(): Unit = {
+    super.fullRefresh()
+    if (category == "firmwares") {
+      $location.path("/old/firmwares/index")
+      $route.reload()
+    }
+  }
+  override def isLoading(): Boolean = super.isLoading()
+  override def refresh(): Unit = super.refresh()
 
   def install(app: js.Dynamic): Unit = {
     val path = s"/old/apply/install/apps/$identifier"
@@ -87,6 +97,14 @@ class OldNotesController(val windowService: WindowService,
     js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/ic_placeholder.png")
 
   def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/help_center")
+
+  def toggleDevMode(): Unit = {
+    SessionService.instance.currentSession.get.developerMode = !SessionService.instance.currentSession.get.developerMode
+    if (category == "firmwares") {
+      $location.path("/old/firmwares/index")
+      $route.reload()
+    }
+  }
 
   val app = {
     if (category == "apps") {

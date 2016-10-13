@@ -9,7 +9,7 @@ import co.ledger.manager.web.Application
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
 import co.ledger.manager.web.core.net.JQHttpClient
 import co.ledger.manager.web.core.utils.UrlEncoder
-import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
+import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 import org.scalajs.dom.raw.XMLHttpRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -61,7 +61,7 @@ class OldAppsListController(val windowService: WindowService,
 
   def isEmpty() = getApplications().length == 0
 
-  def isInDevMode() = Application.developerMode
+  def isInDevMode() = SessionService.instance.currentSession.get.developerMode
 
   def getApplications() = {
     applications.array.filter {(item) =>
@@ -70,7 +70,7 @@ class OldAppsListController(val windowService: WindowService,
   }
 
   def toggleDevMode() = {
-    Application.developerMode = !Application.developerMode
+    SessionService.instance.currentSession.get.developerMode = !SessionService.instance.currentSession.get.developerMode
   }
 
   def icon(name: String) =

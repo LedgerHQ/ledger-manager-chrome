@@ -6,7 +6,7 @@ import biz.enef.angulate.{Directive, Scope}
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.{Attributes, JQLite, Location}
 import co.ledger.manager.web.components.LeftPanel.LeftPanelScope
-import co.ledger.manager.web.services.ApiService
+import co.ledger.manager.web.services.{ApiService, SessionService}
 import co.ledger.wallet.core.device.utils.EventReceiver
 import org.widok.moment.Moment
 
@@ -90,6 +90,7 @@ class LeftPanel( $location: Location,
     scope.lastUpdate = apiService.lastUpdateDate.map {(date) =>
       Moment(date.getTime).fromNow().capitalize
     } getOrElse("Never")
+    scope.deviceName = SessionService.instance.currentSession.get.device._2.name
     scope.asInstanceOf[Scope].$on("$destroy", {() =>
       apiService.eventEmitter.unregister(receiver)
       if (interval != null)
@@ -115,6 +116,7 @@ object LeftPanel {
     var navigate: js.Function = _
     var refresh: js.Function = _
     var lastUpdate: String = _
+    var deviceName: String = _
   }
 
   def init(module: RichModule) = module.directiveOf[LeftPanel]("leftPanel")

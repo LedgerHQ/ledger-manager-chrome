@@ -180,13 +180,18 @@
       flex-grow: 1;
     }
 
-    > a {
-      color: @color-dark-grey;
-      font-size: @font-size-very-small;
+    > .actions {
+      display: flex;
 
-      &:hover {
-        cursor: pointer;
-        color: darken(@color-dark-grey, @color-default-darken-value);
+      > a {
+        color: @color-soft-grey;
+        font-weight: @font-weight-regular;
+        font-size: @font-size-very-small;
+
+        &:hover {
+          cursor: pointer;
+          color: darken(@color-dark-grey, @color-very-strong-darken-value);
+        }
       }
     }
 
@@ -208,7 +213,6 @@
       color: @color-soft-grey;
       font-weight: @font-weight-regular;
       font-size: @font-size-very-small;
-      margin-right: 20px;
 
       &:hover {
         color: darken(@color-soft-grey, @color-very-strong-darken-value);

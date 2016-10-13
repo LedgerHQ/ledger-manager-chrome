@@ -91,6 +91,8 @@ object LedgerBolosApi {
       else
         None
     }
+
+    def compareVersion(stringVersion: String): Int = version.compare(stringVersion)
   }
 
 }

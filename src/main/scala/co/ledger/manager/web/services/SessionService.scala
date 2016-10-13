@@ -2,11 +2,13 @@ package co.ledger.manager.web.services
 
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.Service
+import co.ledger.manager.web.services.ApiService.Device
 import co.ledger.wallet.core.device.ethereum.LedgerApi
 import co.ledger.wallet.core.device.ethereum.LedgerBolosApi.FirmwareVersion
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.scalajs.js
 
 /**
   *
@@ -46,16 +48,15 @@ class SessionService(apiService: ApiService) extends Service {
       firmwareVersion = version
       apiService.devices
     } map {(devices) =>
-      val device = devices.find({
+      val device = devices.dict.find({
         case (name, d) =>
           d.targetId == firmwareVersion.intTargetId
       }) getOrElse {
-        (firmwareVersion.intTargetId.toString)
+        (firmwareVersion.intTargetId.toString, js.Dynamic.literal(
+          targetId = firmwareVersion.intTargetId
+        ).asInstanceOf[Device])
       }
-      val session = new Session(firmwareVersion)
-    }
-    Future {
-      val session = new Session()
+      val session = new Session(firmwareVersion, device)
       _currentSession = Some(session)
     }
   }
@@ -74,6 +75,7 @@ class SessionService(apiService: ApiService) extends Service {
                ) {
     val password = ""
     val sessionPreferences = scala.collection.mutable.Map[String, Any]()
+    var developerMode = false
   }
 
   SessionService.setInstance(this)

@@ -52,12 +52,24 @@ class ApiService extends Service {
       _applications = Some(Application.httpClient.get("/applications" + queryString).json map {
         case (json, _) =>
           _lastUpdateDate = Some(new Date())
-          if (json.has("nanos")) {
-            val apps = json.getJSONArray("nanos")
+          val deviceIdentifier = SessionService.instance.currentSession.get.device._1
+          if (json.has(deviceIdentifier)) {
+            val apps = json.getJSONArray(deviceIdentifier)
             JSON.parse(apps.toString).asInstanceOf[js.Array[App]]
           } else {
             js.Array()
           }
+      } map {(applications) =>
+        val version = SessionService.instance.currentSession.get.firmware
+        applications.filter({(application) =>
+          val dynamic = application.asInstanceOf[js.Dynamic]
+          val min: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
+          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
+          js.Dynamic.global.console.log(application)
+          println(max)
+          println(min)
+          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.get) || (max.isEmpty && min.get) || (max.get && min.get)
+        }).asInstanceOf[js.Array[ApiService.App]] // ScalaJS won't build sources without explicit cast -_-
       })
       _applications.get foreach {(_) =>
         eventEmitter.emit(UpdateDoneEvent())
@@ -71,12 +83,21 @@ class ApiService extends Service {
       _firmwares = Some(Application.httpClient.get("/firmwares" + queryString).json map {
         case (json, _) =>
           _lastUpdateDate = Some(new Date())
-          if (json.has("nanos")) {
-            val firms = json.getJSONArray("nanos")
+          val deviceIdentifier = SessionService.instance.currentSession.get.device._1
+          if (json.has(deviceIdentifier)) {
+            val firms = json.getJSONArray(deviceIdentifier)
             JSON.parse(firms.toString).asInstanceOf[js.Array[Firmware]]
           } else {
             js.Array()
           }
+      } map {(firmwares) =>
+        val version = SessionService.instance.currentSession.get.firmware
+        firmwares.filter({(firmware) =>
+          val dynamic = firmware.asInstanceOf[js.Dynamic]
+          val min: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
+          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
+          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.get) || (max.isEmpty && min.get) || (max.get && min.get)
+        }).asInstanceOf[js.Array[Firmware]] // ScalaJS won't build sources without explicit cast -_-
       })
       _firmwares.get foreach {(_) =>
         eventEmitter.emit(UpdateDoneEvent())
@@ -88,7 +109,7 @@ class ApiService extends Service {
   def devices: Future[js.Dictionary[Device]] = {
     Application.httpClient.get("/devices" + queryString).json map {
       case (json, _) =>
-       json.asInstanceOf[js.Dictionary[Device]]
+       json.toJavascript.asInstanceOf[js.Dictionary[Device]]
     }
   }
 
@@ -133,6 +154,7 @@ object ApiService {
   @js.native
   trait Device extends js.Object {
     val targetId: Int
+    val name: String
   }
 
   def init(module: RichModule) = module.serviceOf[ApiService]("apiService")
