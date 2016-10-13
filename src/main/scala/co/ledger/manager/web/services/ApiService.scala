@@ -1,8 +1,11 @@
 package co.ledger.manager.web.services
 
+import java.util.Date
+
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.Service
 import co.ledger.manager.web.Application
+import co.ledger.manager.web.core.event.JsEventEmitter
 import co.ledger.manager.web.core.utils.UrlEncoder
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -55,6 +58,7 @@ class ApiService extends Service {
           ""
       _applications = Some(Application.httpClient.get("/applications" + provider).json map {
         case (json, _) =>
+          _lastUpdateDate = Some(new Date())
           if (json.has("nanos")) {
             val apps = json.getJSONArray("nanos")
             JSON.parse(apps.toString).asInstanceOf[js.Array[App]]
@@ -62,6 +66,9 @@ class ApiService extends Service {
             js.Array()
           }
       })
+      _applications.get foreach {(_) =>
+        eventEmitter.emit(UpdateDoneEvent())
+      }
     }
    _applications.get
   }
@@ -77,6 +84,7 @@ class ApiService extends Service {
           ""
       _firmwares = Some(Application.httpClient.get("/firmwares" + provider).json map {
         case (json, _) =>
+          _lastUpdateDate = Some(new Date())
           if (json.has("nanos")) {
             val firms = json.getJSONArray("nanos")
             js.Dynamic.global.console.log(JSON.parse(firms.toString).asInstanceOf[js.Array[js.Dictionary[js.Any]]])
@@ -85,6 +93,9 @@ class ApiService extends Service {
             js.Array()
           }
       })
+      _firmwares.get foreach {(_) =>
+        eventEmitter.emit(UpdateDoneEvent())
+      }
     }
     _firmwares.get
   }
@@ -95,11 +106,18 @@ class ApiService extends Service {
     applications.flatMap({(_) => firmwares}).map({(_) => ()})
   }
 
+  def lastUpdateDate = _lastUpdateDate
+
+  val eventEmitter = new JsEventEmitter
+
   private var _applications: Option[Future[js.Array[App]]] = None
   private var _firmwares: Option[Future[js.Array[Firmware]]] = None
+  private var _lastUpdateDate: Option[Date] = None
 }
 
 object ApiService {
+
+  case class UpdateDoneEvent()
 
   @ScalaJSDefined
   trait App extends js.Object {

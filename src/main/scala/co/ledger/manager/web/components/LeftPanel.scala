@@ -1,12 +1,18 @@
 package co.ledger.manager.web.components
 
+import java.util.Date
+
 import biz.enef.angulate.{Directive, Scope}
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.{Attributes, JQLite, Location}
 import co.ledger.manager.web.components.LeftPanel.LeftPanelScope
+import co.ledger.manager.web.services.ApiService
+import co.ledger.wallet.core.device.utils.EventReceiver
+import org.widok.moment.Moment
 
+import scala.concurrent.duration
 import scala.scalajs.js
-import scala.scalajs.js.{Dictionary, UndefOr}
+import scala.scalajs.js.{Dictionary, UndefOr, timers}
 import scala.scalajs.js.annotation.ScalaJSDefined
 
 /**
@@ -41,7 +47,8 @@ import scala.scalajs.js.annotation.ScalaJSDefined
   */
 class LeftPanel( $location: Location,
                  $route: js.Dynamic,
-                 $parse: js.Dynamic) extends Directive {
+                 $parse: js.Dynamic,
+                 apiService: ApiService) extends Directive {
   override def templateUrl: String = "/templates/components/left-panel.html"
   override type ControllerType = js.Dynamic
   override type ScopeType = LeftPanel.LeftPanelScope
@@ -57,6 +64,20 @@ class LeftPanel( $location: Location,
   )
 
   override def postLink(scope: ScopeType, elem: JQLite, attrs: Attributes): Unit = {
+    import timers._
+    import duration._
+
+    var interval: SetIntervalHandle = null
+    val receiver = new EventReceiver {
+      override def receive: Receive = {
+        case ApiService.UpdateDoneEvent() =>
+          scope.lastUpdate = apiService.lastUpdateDate.map {(date) =>
+            Moment(date.getTime).fromNow().capitalize
+          } getOrElse("Never")
+          scope.asInstanceOf[Scope].$digest()
+        case ignore =>
+      }
+    }
     scope.categories = categories
     scope.selected = attrs("selectedCategory")
     scope.navigate = {(path: String) =>
@@ -65,6 +86,21 @@ class LeftPanel( $location: Location,
     }
     scope.refresh = {() =>
       scope.asInstanceOf[js.Dynamic].onRefresh()
+    }
+    scope.lastUpdate = apiService.lastUpdateDate.map {(date) =>
+      Moment(date.getTime).fromNow().capitalize
+    } getOrElse("Never")
+    scope.asInstanceOf[Scope].$on("$destroy", {() =>
+      apiService.eventEmitter.unregister(receiver)
+      if (interval != null)
+        clearInterval(interval)
+    })
+    apiService.eventEmitter.register(receiver)
+    interval = setInterval(1.minute) {
+      scope.lastUpdate = apiService.lastUpdateDate.map {(date) =>
+        Moment(date.getTime).fromNow().capitalize
+      } getOrElse("Never")
+      scope.asInstanceOf[Scope].$digest()
     }
   }
 
@@ -78,6 +114,7 @@ object LeftPanel {
     var categories: js.Array[js.Object with js.Dynamic] = _
     var navigate: js.Function = _
     var refresh: js.Function = _
+    var lastUpdate: String = _
   }
 
   def init(module: RichModule) = module.directiveOf[LeftPanel]("leftPanel")
