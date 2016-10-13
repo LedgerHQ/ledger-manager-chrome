@@ -49,14 +49,7 @@ class ApiService extends Service {
 
   def applications: Future[js.Array[App]] = {
     if (_applications.isEmpty) {
-      val provider =
-        if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
-          "?provider=ledger"
-        else if (!js.isUndefined(js.Dynamic.global.CUSTOM_PROVIDER) && js.Dynamic.global.CUSTOM_PROVIDER.toString.nonEmpty)
-          s"?provider=${UrlEncoder.encode(js.Dynamic.global.CUSTOM_PROVIDER.toString)}"
-        else
-          ""
-      _applications = Some(Application.httpClient.get("/applications" + provider).json map {
+      _applications = Some(Application.httpClient.get("/applications" + queryString).json map {
         case (json, _) =>
           _lastUpdateDate = Some(new Date())
           if (json.has("nanos")) {
@@ -75,19 +68,11 @@ class ApiService extends Service {
 
   def firmwares: Future[js.Array[Firmware]] = {
     if (_firmwares.isEmpty) {
-      val provider =
-        if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
-          "?provider=ledger"
-        else if (!js.isUndefined(js.Dynamic.global.CUSTOM_PROVIDER) && js.Dynamic.global.CUSTOM_PROVIDER.toString.nonEmpty)
-          s"?provider=${UrlEncoder.encode(js.Dynamic.global.CUSTOM_PROVIDER.toString)}"
-        else
-          ""
-      _firmwares = Some(Application.httpClient.get("/firmwares" + provider).json map {
+      _firmwares = Some(Application.httpClient.get("/firmwares" + queryString).json map {
         case (json, _) =>
           _lastUpdateDate = Some(new Date())
           if (json.has("nanos")) {
             val firms = json.getJSONArray("nanos")
-            js.Dynamic.global.console.log(JSON.parse(firms.toString).asInstanceOf[js.Array[js.Dictionary[js.Any]]])
             JSON.parse(firms.toString).asInstanceOf[js.Array[Firmware]]
           } else {
             js.Array()
@@ -98,6 +83,22 @@ class ApiService extends Service {
       }
     }
     _firmwares.get
+  }
+
+  def devices: Future[js.Dictionary[Device]] = {
+    Application.httpClient.get("/devices" + queryString).json map {
+      case (json, _) =>
+       json.asInstanceOf[js.Dictionary[Device]]
+    }
+  }
+
+  private def queryString = {
+    if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
+      "?provider=ledger"
+    else if (!js.isUndefined(js.Dynamic.global.CUSTOM_PROVIDER) && js.Dynamic.global.CUSTOM_PROVIDER.toString.nonEmpty)
+      s"?provider=${UrlEncoder.encode(js.Dynamic.global.CUSTOM_PROVIDER.toString)}"
+    else
+      ""
   }
 
   def refresh(): Future[Unit] = {
@@ -127,6 +128,11 @@ object ApiService {
   @ScalaJSDefined
   trait Firmware extends js.Object {
 
+  }
+
+  @js.native
+  trait Device extends js.Object {
+    val targetId: Int
   }
 
   def init(module: RichModule) = module.serviceOf[ApiService]("apiService")

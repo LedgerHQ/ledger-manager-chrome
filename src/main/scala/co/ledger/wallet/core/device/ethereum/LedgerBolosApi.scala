@@ -83,6 +83,7 @@ object LedgerBolosApi {
 
   class FirmwareVersion(reader: BytesReader) {
     val targetId = reader.readNextBytes(4)
+    val intTargetId = new BytesReader(targetId).readNextInt()
     val version = new String(reader.readNextBytes(reader.readNextByte()))
     val flags: Option[Array[Byte]] = {
       if (reader.available > 0)
