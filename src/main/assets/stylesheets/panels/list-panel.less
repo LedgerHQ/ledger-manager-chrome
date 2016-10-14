@@ -169,11 +169,31 @@
 
       > p {
         margin-top: 10px;
-        line-height: 24px;
+        line-height: 23px;
         font-weight: @font-weight-regular;
         font-size: @font-size-medium;
         color: @color-black;
       }
+
+      > ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+        margin-top: 10px;
+
+        > li {
+          font-weight: @font-weight-regular;
+          line-height: 23px;
+          font-size: @font-size-medium;
+          color: @color-black;
+          margin-top: 5px;
+        }
+
+        > li:first-child {
+          margin-top: 0;
+        }
+
+      }
+
     }
 
     .spacer {

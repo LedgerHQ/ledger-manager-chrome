@@ -91,7 +91,7 @@ class Logger {
 
   private def computeOriginalSource(line: String): String = {
     if (LogSourceMapper.mapping.isDefined) {
-      val pattern = "\\((chrome-extension://.*/ledger-wallet-ethereum-chrome-fastopt.js:(\\d*):(\\d*))\\)".r
+      val pattern = "\\((chrome-extension://.*/ledger-manager-chrome-fastopt.js:(\\d*):(\\d*))\\)".r
       var out = line
       pattern.findAllMatchIn(line).foreach({ (m) =>
         val l = m.group(2).toInt
@@ -181,6 +181,7 @@ object LogExporter {
     val writer = new StringWriter()
     LogEntry.readonly(SessionService.instance.currentSession.map(_.password)).cursor flatMap {(cursor) =>
       cursor foreach {(item) =>
+        js.Dynamic.global.console.log("ENTRY " + item)
         item match {
           case Some(entry) =>
             writer.append(formatLog(
@@ -204,8 +205,8 @@ object LogExporter {
 
   def download(): Future[Unit] = {
     toUri.map {(url: URL) =>
-      val link = js.Dynamic.global.document.createElement("a");
-      link.download = s"ledger_wallet_ethereum_${new Date().getTime}.logs"
+      val link = js.Dynamic.global.document.createElement("a")
+      link.download = s"ledger_manager_${new Date().getTime}.logs"
       link.href = url
       link.click()
       ()

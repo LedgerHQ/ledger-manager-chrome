@@ -64,11 +64,11 @@ class ApiService extends Service {
         applications.filter({(application) =>
           val dynamic = application.asInstanceOf[js.Dynamic]
           val min: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
-          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
+          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.max)) None else Some(version.compareVersion(dynamic.bolos_version.max.asInstanceOf[String]) <= 0)
           js.Dynamic.global.console.log(application)
           println(max)
           println(min)
-          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.get) || (max.isEmpty && min.get) || (max.get && min.get)
+          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.getOrElse(false)) || (max.isEmpty && min.getOrElse(false)) || (max.getOrElse(false) && min.get)
         }).asInstanceOf[js.Array[ApiService.App]] // ScalaJS won't build sources without explicit cast -_-
       })
       _applications.get foreach {(_) =>
@@ -95,8 +95,8 @@ class ApiService extends Service {
         firmwares.filter({(firmware) =>
           val dynamic = firmware.asInstanceOf[js.Dynamic]
           val min: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
-          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
-          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.get) || (max.isEmpty && min.get) || (max.get && min.get)
+          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.max)) None else Some(version.compareVersion(dynamic.bolos_version.max.asInstanceOf[String]) <= 0)
+          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.getOrElse(false)) || (max.isEmpty && min.getOrElse(false)) || (max.getOrElse(false) && min.get)
         }).asInstanceOf[js.Array[Firmware]] // ScalaJS won't build sources without explicit cast -_-
       })
       _firmwares.get foreach {(_) =>
@@ -123,9 +123,13 @@ class ApiService extends Service {
   }
 
   def refresh(): Future[Unit] = {
+    clearData()
+    applications.flatMap({(_) => firmwares}).map({(_) => ()})
+  }
+
+  def clearData(): Unit = {
     _applications = None
     _firmwares = None
-    applications.flatMap({(_) => firmwares}).map({(_) => ()})
   }
 
   def lastUpdateDate = _lastUpdateDate

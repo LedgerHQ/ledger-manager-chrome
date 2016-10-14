@@ -64,6 +64,7 @@ class SessionService(apiService: ApiService) extends Service {
   def stopCurrentSessions(): Future[Unit] = {
     println("Stop current session")
     _currentSession = None
+    apiService.clearData()
     Future.successful()
   }
 
@@ -73,7 +74,7 @@ class SessionService(apiService: ApiService) extends Service {
   class Session(val firmware: FirmwareVersion,
                 val device: (String, ApiService.Device)
                ) {
-    val password = ""
+    val password: String = ""
     val sessionPreferences = scala.collection.mutable.Map[String, Any]()
     var developerMode = false
   }

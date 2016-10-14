@@ -5,7 +5,7 @@ language:
 # Application
 application:
   name: Ledger Manager
-  small_description: Manager
+  small_description: Ledger Manager organizes your Ledger device applications efficiently and securely.
   support_url: http\://support.ledgerwallet.com/
   commands:
     reload_page: Reload the current page

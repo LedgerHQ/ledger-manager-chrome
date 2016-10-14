@@ -94,15 +94,12 @@ class OldAppsListController(val windowService: WindowService,
   }
 
   override def onBeforeRefresh(): Unit = {
-    println("YO")
     applications = js.Array()
-    js.Dynamic.global.console.log(applications)
   }
 
 
   override def onAfterRefresh(): Unit = {
     applications = apiService.applications.value.flatMap(_.toOption).getOrElse(js.Array())
-    js.Dynamic.global.console.log(applications)
   }
 
   override def fullRefresh(): Unit = super.fullRefresh()

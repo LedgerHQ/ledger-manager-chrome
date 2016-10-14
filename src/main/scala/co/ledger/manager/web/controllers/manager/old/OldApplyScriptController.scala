@@ -95,7 +95,7 @@ class OldApplyScriptController(val windowService: WindowService,
     PermissionsHelper.requestIfNecessary("fileSystem") flatMap { _ =>
       PermissionsHelper.requestIfNecessary("fileSystem.write")
     } flatMap {_ =>
-      ChromeFileSystem.chooseFileEntry(s"ledger-ethereum-chrome-logs-${new Date().getTime}.logs")
+      ChromeFileSystem.chooseFileEntry(s"ledger-manager-logs-${new Date().getTime}.logs")
     } flatMap {(entry) =>
       LogExporter.toBlob flatMap {(content) =>
         entry.write(content)
