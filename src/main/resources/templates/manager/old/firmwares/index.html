@@ -29,6 +29,13 @@
         <h1 translate>
             common.no_items_to_display
         </h1>
+        <div class="actions">
+            <div class="spacer"></div>
+            <a ng-click="ctrl.toggleDevMode()">
+                <span ng-show="!ctrl.isInDevMode()" translate>old.common.show_dev</span>
+                <span ng-show="ctrl.isInDevMode()" translate>old.common.hide_dev</span>
+            </a>
+        </div>
     </div>
     <div class="right-panel loading-panel scrollable"  ng-show="ctrl.isLoading()">
         <spinner  ng-show="ctrl.isLoading()"></spinner>

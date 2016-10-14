@@ -86,9 +86,6 @@ class BatchAppListController(val windowService: WindowService,
 
   def installBatch(): Unit = {
     val apps = applications.filter({(item) => isChecked(item.asInstanceOf[js.Dynamic])}).map(_.asInstanceOf[js.Dynamic])
-    apps foreach {
-     js.Dynamic.global.console.log("Install ", _)
-    }
     ApplyUpdateController.APP_BATCH = apps.toArray
     $location.path(s"/apply/batch/application/${js.Dynamic.global.encodeURIComponent(apps(0).name)}/${JSON.stringify(apps(0).app)}/")
   }

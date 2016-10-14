@@ -5,7 +5,7 @@ language:
 # Application
 application:
   name: Ledger Manager
-  small_description: Manager
+  small_description: Ledger Manager organizes your Ledger device applications efficiently and securely.
   support_url: http\://support.ledgerwallet.com/
   commands:
     reload_page: Reload the current page
@@ -22,7 +22,7 @@ dates:
 
 common:
   no_items_to_display: No items to display.
-  please_wait: Please wait this may take a few moments.
+  please_wait: Please wait, this may take a few moments.
   applications: applications
   firmwares: firmwares
   firmware: firmware
@@ -43,9 +43,9 @@ launch:
 
 old:
   common:
-    release_notes: release notes
-    show_dev: show developer items
-    hide_dev: hide developer items
+    release_notes: Release notes
+    show_dev: Show developer items
+    hide_dev: Hide developer items
     dev_version: (developer)
   apps:
     loading: Updating store...
@@ -59,3 +59,8 @@ old:
     confirm_install: If asked, confirm the installation on your device.
     uninstall_application: Removing application...
     confirm_uninstall: If asked, confirm the removal on your device.
+    error_title_install_app: Unable to install application.
+    error_title_uninstall_app: Unable to remove application.
+    error_title_install_osu: Unable to install OS updater.
+    error_title_install_firmware: Unable to install firmware.
+    contact_support: If the problem persists, contact Ledger support.

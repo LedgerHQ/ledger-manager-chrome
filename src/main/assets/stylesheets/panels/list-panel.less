@@ -29,8 +29,6 @@
     }
 
     img {
-      background-color: @color-very-light-grey;
-      border-radius: 9px;
       margin-right: 20px;
     }
 
@@ -171,24 +169,49 @@
 
       > p {
         margin-top: 10px;
-        line-height: 24px;
+        line-height: 23px;
         font-weight: @font-weight-regular;
         font-size: @font-size-medium;
         color: @color-black;
       }
+
+      > ol {
+        list-style-type: decimal;
+        list-style-position: inside;
+        margin-top: 10px;
+
+        > li {
+          font-weight: @font-weight-regular;
+          line-height: 23px;
+          font-size: @font-size-medium;
+          color: @color-black;
+          margin-top: 5px;
+        }
+
+        > li:first-child {
+          margin-top: 0;
+        }
+
+      }
+
     }
 
     .spacer {
       flex-grow: 1;
     }
 
-    > a {
-      color: @color-dark-grey;
-      font-size: @font-size-very-small;
+    > .actions {
+      display: flex;
 
-      &:hover {
-        cursor: pointer;
-        color: darken(@color-dark-grey, @color-default-darken-value);
+      > a {
+        color: @color-soft-grey;
+        font-weight: @font-weight-regular;
+        font-size: @font-size-very-small;
+
+        &:hover {
+          cursor: pointer;
+          color: darken(@color-dark-grey, @color-very-strong-darken-value);
+        }
       }
     }
 
@@ -210,7 +233,6 @@
       color: @color-soft-grey;
       font-weight: @font-weight-regular;
       font-size: @font-size-very-small;
-      margin-right: 20px;
 
       &:hover {
         color: darken(@color-soft-grey, @color-very-strong-darken-value);

@@ -6,7 +6,7 @@ import biz.enef.angulate.core.Location
 import co.ledger.manager.web.Application
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
 import co.ledger.manager.web.core.utils.UrlEncoder
-import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
+import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 
 import scala.scalajs.js
 
@@ -52,14 +52,20 @@ class OldFirmwaresListController(val windowService: WindowService,
 
   def getFirmwares() = {
     firmwares.array.filter {(item) =>
-      isInDevMode() || !item.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
+      if (isInDevMode())
+        item.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
+      else
+        !item.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
     }
   }
   def isEmpty() = getFirmwares().length == 0
   def toggleDevMode() = {
-    Application.developerMode = !Application.developerMode
+    SessionService.instance.currentSession.get.developerMode = !SessionService.instance.currentSession.get.developerMode
+    if (getFirmwares().length == 1) {
+      navigateNotes(getFirmwares().head.asInstanceOf[js.Dynamic].identifier.asInstanceOf[String])
+    }
   }
-  def isInDevMode() = Application.developerMode
+  def isInDevMode() = SessionService.instance.currentSession.get.developerMode
   override def isLoading(): Boolean = super.isLoading()
   override def fullRefresh(): Unit = super.fullRefresh()
   override def onBeforeRefresh(): Unit = {
@@ -69,7 +75,9 @@ class OldFirmwaresListController(val windowService: WindowService,
   override def onAfterRefresh(): Unit = {
     super.onAfterRefresh()
     firmwares = apiService.firmwares.value.flatMap(_.toOption).getOrElse(js.Array())
-    js.Dynamic.global.console.log("Firmwares", firmwares)
+    if (getFirmwares().length == 1) {
+      navigateNotes(getFirmwares().head.asInstanceOf[js.Dynamic].identifier.asInstanceOf[String])
+    }
   }
   def navigateNotes(name: String) = {
     $location.path(s"/old/notes/firmwares/${UrlEncoder.encode(name)}")

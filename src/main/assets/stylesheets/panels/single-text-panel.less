@@ -10,4 +10,27 @@
     font-weight: @font-weight-regular;
     color: @color-soft-grey;
   }
+
+  > .actions {
+    width: ~"calc(100% - 200px)";
+    position: absolute;
+    bottom: 40px;
+    display: flex;
+    padding-right: 40px;
+    > .spacer {
+      flex-grow: 1;
+    }
+
+    > a {
+      color: @color-soft-grey;
+      font-weight: @font-weight-regular;
+      font-size: @font-size-very-small;
+
+      &:hover {
+        cursor: pointer;
+        color: darken(@color-soft-grey, @color-very-strong-darken-value);
+      }
+    }
+  }
+
 }

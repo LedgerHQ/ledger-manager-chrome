@@ -65,7 +65,6 @@ class Selector($scope: Scope) {
 
   def changed: String = _onSelectionChanged
   def changed_=(fun: String) =  {
-    println(fun.getClass)
     _onSelectionChanged = fun
   }
   private var _onSelectionChanged: String = null

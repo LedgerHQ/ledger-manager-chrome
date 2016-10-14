@@ -2,10 +2,13 @@ package co.ledger.manager.web.services
 
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.Service
+import co.ledger.manager.web.services.ApiService.Device
 import co.ledger.wallet.core.device.ethereum.LedgerApi
+import co.ledger.wallet.core.device.ethereum.LedgerBolosApi.FirmwareVersion
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.scalajs.js
 
 /**
   *
@@ -37,11 +40,23 @@ import scala.concurrent.Future
   * SOFTWARE.
   *
   */
-class SessionService extends Service {
+class SessionService(apiService: ApiService) extends Service {
 
   def startNewSessions(api: LedgerApi): Future[Unit] = {
-    Future {
-      val session = new Session()
+    var firmwareVersion: FirmwareVersion = null
+    api.getFirmwareVersion() flatMap {(version) =>
+      firmwareVersion = version
+      apiService.devices
+    } map {(devices) =>
+      val device = devices.dict.find({
+        case (name, d) =>
+          d.targetId == firmwareVersion.intTargetId
+      }) getOrElse {
+        (firmwareVersion.intTargetId.toString, js.Dynamic.literal(
+          targetId = firmwareVersion.intTargetId
+        ).asInstanceOf[Device])
+      }
+      val session = new Session(firmwareVersion, device)
       _currentSession = Some(session)
     }
   }
@@ -49,15 +64,19 @@ class SessionService extends Service {
   def stopCurrentSessions(): Future[Unit] = {
     println("Stop current session")
     _currentSession = None
+    apiService.clearData()
     Future.successful()
   }
 
   def currentSession = _currentSession
   private var _currentSession: Option[Session] = None
 
-  class Session() {
-    val password = ""
+  class Session(val firmware: FirmwareVersion,
+                val device: (String, ApiService.Device)
+               ) {
+    val password: String = ""
     val sessionPreferences = scala.collection.mutable.Map[String, Any]()
+    var developerMode = false
   }
 
   SessionService.setInstance(this)

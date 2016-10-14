@@ -77,7 +77,6 @@ class AppListController(val windowService: WindowService,
       case (json, _) =>
         if (json.has("nanos")) {
           val firms = json.getJSONArray("nanos")
-          js.Dynamic.global.console.log(JSON.parse(firms.toString).asInstanceOf[js.Array[js.Dictionary[js.Any]]])
           firmwares = JSON.parse(firms.toString).asInstanceOf[js.Array[js.Dictionary[js.Any]]]
         }
     }

@@ -61,7 +61,6 @@ class ApplyUpdateController(val windowService: WindowService,
                             $location: Location,
                             $routeParams: js.Dictionary[String]) extends Controller with ManagerController {
 
-  js.Dynamic.global.console.log($routeParams)
 
   private val product = UrlEncoder.decode($routeParams("product"))
   private val productName = js.Dynamic.global.decodeURIComponent($routeParams("name")).asInstanceOf[String]

@@ -1,5 +1,5 @@
 <div class="panel-view" ng-controller="OldNotesController as ctrl">
-    <left-panel selected-category="{{ctrl.category}}" ></left-panel>
+    <left-panel selected-category="{{ctrl.category}}" on-refresh="ctrl.fullRefresh()"></left-panel>
     <div class="right-panel list-panel scrollable">
         <div class="list-item" ng-if="ctrl.category == 'apps'">
             <img async-src="ctrl.icon(ctrl.app.icon)" width="50" height="50"/>
@@ -40,7 +40,14 @@
 
             </div>
             <div class="spacer"></div>
-            <a ng-click="ctrl.openHelpCenter()" translate>common.need_help</a>
+            <div class="actions">
+                <a ng-click="ctrl.openHelpCenter()" translate>common.need_help</a>
+                <div class="spacer"></div>
+                <a ng-click="ctrl.toggleDevMode()" ng-if="ctrl.category == 'firmwares'">
+                    <span ng-show="!ctrl.isInDevMode()" translate>old.common.show_dev</span>
+                    <span ng-show="ctrl.isInDevMode()" translate>old.common.hide_dev</span>
+                </a>
+            </div>
         </div>
     </div>
 </div>

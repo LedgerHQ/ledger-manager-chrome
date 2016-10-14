@@ -31,10 +31,10 @@ function startApp() {
     chrome.app.window.create('window.html', {
             id: "main_window",
             innerBounds: {
-                width: 800,
-                height: 600,
-                minWidth: 800,
-                minHeight: 600
+                width: 650,
+                height: 560,
+                minWidth: 650,
+                minHeight: 560
             }
         }
     );

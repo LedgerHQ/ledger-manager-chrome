@@ -1,8 +1,11 @@
 package co.ledger.manager.web.services
 
+import java.util.Date
+
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.Service
 import co.ledger.manager.web.Application
+import co.ledger.manager.web.core.event.JsEventEmitter
 import co.ledger.manager.web.core.utils.UrlEncoder
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -46,60 +49,101 @@ class ApiService extends Service {
 
   def applications: Future[js.Array[App]] = {
     if (_applications.isEmpty) {
-      val provider =
-        if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
-          "?provider=ledger"
-        else if (!js.isUndefined(js.Dynamic.global.CUSTOM_PROVIDER) && js.Dynamic.global.CUSTOM_PROVIDER.toString.nonEmpty)
-          s"?provider=${UrlEncoder.encode(js.Dynamic.global.CUSTOM_PROVIDER.toString)}"
-        else
-          ""
-      _applications = Some(Application.httpClient.get("/applications" + provider).json map {
+      _applications = Some(Application.httpClient.get("/applications" + queryString).json map {
         case (json, _) =>
-          if (json.has("nanos")) {
-            val apps = json.getJSONArray("nanos")
+          _lastUpdateDate = Some(new Date())
+          val deviceIdentifier = SessionService.instance.currentSession.get.device._1
+          if (json.has(deviceIdentifier)) {
+            val apps = json.getJSONArray(deviceIdentifier)
             JSON.parse(apps.toString).asInstanceOf[js.Array[App]]
           } else {
             js.Array()
           }
+      } map {(applications) =>
+        val version = SessionService.instance.currentSession.get.firmware
+        applications.filter({(application) =>
+          val dynamic = application.asInstanceOf[js.Dynamic]
+          val min: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
+          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.max)) None else Some(version.compareVersion(dynamic.bolos_version.max.asInstanceOf[String]) <= 0)
+          js.Dynamic.global.console.log(application)
+          println(max)
+          println(min)
+          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.getOrElse(false)) || (max.isEmpty && min.getOrElse(false)) || (max.getOrElse(false) && min.get)
+        }).asInstanceOf[js.Array[ApiService.App]] // ScalaJS won't build sources without explicit cast -_-
       })
+      _applications.get foreach {(_) =>
+        eventEmitter.emit(UpdateDoneEvent())
+      }
     }
    _applications.get
   }
 
   def firmwares: Future[js.Array[Firmware]] = {
     if (_firmwares.isEmpty) {
-      val provider =
-        if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
-          "?provider=ledger"
-        else if (!js.isUndefined(js.Dynamic.global.CUSTOM_PROVIDER) && js.Dynamic.global.CUSTOM_PROVIDER.toString.nonEmpty)
-          s"?provider=${UrlEncoder.encode(js.Dynamic.global.CUSTOM_PROVIDER.toString)}"
-        else
-          ""
-      _firmwares = Some(Application.httpClient.get("/firmwares" + provider).json map {
+      _firmwares = Some(Application.httpClient.get("/firmwares" + queryString).json map {
         case (json, _) =>
-          if (json.has("nanos")) {
-            val firms = json.getJSONArray("nanos")
-            js.Dynamic.global.console.log(JSON.parse(firms.toString).asInstanceOf[js.Array[js.Dictionary[js.Any]]])
+          _lastUpdateDate = Some(new Date())
+          val deviceIdentifier = SessionService.instance.currentSession.get.device._1
+          if (json.has(deviceIdentifier)) {
+            val firms = json.getJSONArray(deviceIdentifier)
             JSON.parse(firms.toString).asInstanceOf[js.Array[Firmware]]
           } else {
             js.Array()
           }
+      } map {(firmwares) =>
+        val version = SessionService.instance.currentSession.get.firmware
+        firmwares.filter({(firmware) =>
+          val dynamic = firmware.asInstanceOf[js.Dynamic]
+          val min: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.min)) None else Some(version.compareVersion(dynamic.bolos_version.min.asInstanceOf[String]) >= 0)
+          val max: Option[Boolean] = if (js.isUndefined(dynamic.bolos_version) || js.isUndefined(dynamic.bolos_version.max)) None else Some(version.compareVersion(dynamic.bolos_version.max.asInstanceOf[String]) <= 0)
+          (min.isEmpty && max.isEmpty) || (min.isEmpty && max.getOrElse(false)) || (max.isEmpty && min.getOrElse(false)) || (max.getOrElse(false) && min.get)
+        }).asInstanceOf[js.Array[Firmware]] // ScalaJS won't build sources without explicit cast -_-
       })
+      _firmwares.get foreach {(_) =>
+        eventEmitter.emit(UpdateDoneEvent())
+      }
     }
     _firmwares.get
   }
 
+  def devices: Future[js.Dictionary[Device]] = {
+    Application.httpClient.get("/devices" + queryString).json map {
+      case (json, _) =>
+       json.toJavascript.asInstanceOf[js.Dictionary[Device]]
+    }
+  }
+
+  private def queryString = {
+    if (!js.isUndefined(js.Dynamic.global.LEDGER) && js.Dynamic.global.LEDGER.asInstanceOf[Boolean] == true)
+      "?provider=ledger"
+    else if (!js.isUndefined(js.Dynamic.global.CUSTOM_PROVIDER) && js.Dynamic.global.CUSTOM_PROVIDER.toString.nonEmpty)
+      s"?provider=${UrlEncoder.encode(js.Dynamic.global.CUSTOM_PROVIDER.toString)}"
+    else
+      ""
+  }
+
   def refresh(): Future[Unit] = {
-    _applications = None
-    _firmwares = None
+    clearData()
     applications.flatMap({(_) => firmwares}).map({(_) => ()})
   }
 
+  def clearData(): Unit = {
+    _applications = None
+    _firmwares = None
+  }
+
+  def lastUpdateDate = _lastUpdateDate
+
+  val eventEmitter = new JsEventEmitter
+
   private var _applications: Option[Future[js.Array[App]]] = None
   private var _firmwares: Option[Future[js.Array[Firmware]]] = None
+  private var _lastUpdateDate: Option[Date] = None
 }
 
 object ApiService {
+
+  case class UpdateDoneEvent()
 
   @ScalaJSDefined
   trait App extends js.Object {
@@ -109,6 +153,12 @@ object ApiService {
   @ScalaJSDefined
   trait Firmware extends js.Object {
 
+  }
+
+  @js.native
+  trait Device extends js.Object {
+    val targetId: Int
+    val name: String
   }
 
   def init(module: RichModule) = module.serviceOf[ApiService]("apiService")

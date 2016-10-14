@@ -31,12 +31,15 @@
 
     <div class="right-panel error-panel" ng-if="ctrl.hasError == true">
        <img src="images/icons/ic_error.png" />
-        <h1>ERROR</h1>
-        <p>TEXT</p>
-        <action-bottom-bar style="margin-top: 30px">
+        <h1 ng-if="ctrl.script == 'install' && ctrl.product == 'osu'" translate>old.apply.error_title_install_osu</h1>
+        <h1 ng-if="ctrl.script == 'install' && ctrl.product == 'firmware'" translate>old.apply.error_title_install_firmware</h1>
+        <h1 ng-if="ctrl.script == 'install' && ctrl.product == 'apps'" translate>old.apply.error_title_install_app</h1>
+        <h1 ng-if="ctrl.script == 'uninstall' && ctrl.product == 'apps'" translate>old.apply.error_title_uninstall_app</h1>
+        <p translate>old.apply.contact_support</p>
+        <div class="actions">
             <lbutton text="logs" type="cancel" ng-click="ctrl.exportLogs()"></lbutton>
             <lbutton text="Continue" ng-click="ctrl.next()"></lbutton>
-        </action-bottom-bar>
+        </div>
     </div>
 
 </div>
