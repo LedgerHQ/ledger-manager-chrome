@@ -17,11 +17,24 @@
                 <div class="round-button grey" ng-click="ctrl.uninstall(app)">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </div>
+                <input type="checkbox" ng-if="ctrl.isInFactoryMode" ng-click="ctrl.toggle(app)" ng-checked="ctrl.isChecked(app)"></input>
             </div>
         </div>
 
         <div class="list-placeholder"></div>
         <div class="footer">
+            <a ng-click="ctrl.installBatch()" ng-if="ctrl.isInFactoryMode">
+                Install applications
+            </a>
+            <a style="margin-left: 4px;margin-right: 4px; pointer-events: none" ng-if="ctrl.isInFactoryMode">
+                -
+            </a>
+            <a ng-click="ctrl.removeBatch()" ng-if="ctrl.isInFactoryMode">
+                Remove applications
+            </a>
+            <a style="margin-left: 4px;margin-right: 4px; pointer-events: none" ng-if="ctrl.isInFactoryMode">
+                -
+            </a>
             <a ng-click="ctrl.toggleDevMode()">
                 <span ng-show="!ctrl.isInDevMode()" translate>old.common.show_dev</span>
                 <span ng-show="ctrl.isInDevMode()" translate>old.common.hide_dev</span>

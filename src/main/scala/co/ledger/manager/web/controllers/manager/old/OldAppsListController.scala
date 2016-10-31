@@ -6,6 +6,7 @@ import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
 import co.ledger.manager.web.Application
+import co.ledger.manager.web.cli.LedgerConsoleInterface
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
 import co.ledger.manager.web.core.net.JQHttpClient
 import co.ledger.manager.web.core.utils.UrlEncoder
@@ -59,6 +60,8 @@ class OldAppsListController(val windowService: WindowService,
   var applications = js.Array[ApiService.App]()
   var images = scala.collection.mutable.Map[String, js.Any]()
 
+  val isInFactoryMode = LedgerConsoleInterface.isInFactoryMode
+
   def isEmpty() = getApplications().length == 0
 
   def isInDevMode() = SessionService.instance.currentSession.get.developerMode
@@ -82,13 +85,13 @@ class OldAppsListController(val windowService: WindowService,
   }
 
   def install(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/apps/${app.identifier}/"
+    val path = s"/old/apply/install/apps/${app.identifier}"
     $location.path(path)
     $route.reload()
   }
 
   def uninstall(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/uninstall/apps/${app.identifier}/"
+    val path = s"/old/apply/uninstall/apps/${app.identifier}"
     $location.path(path)
     $route.reload()
   }
@@ -97,6 +100,40 @@ class OldAppsListController(val windowService: WindowService,
     applications = js.Array()
   }
 
+  def isChecked(application: js.Dynamic): Boolean = {
+    LedgerConsoleInterface.SELECTED_APPS.contains(application.name.asInstanceOf[String])
+  }
+
+  def toggle(application: js.Dynamic): Unit = {
+    if (isChecked(application)) {
+      LedgerConsoleInterface.SELECTED_APPS = LedgerConsoleInterface.SELECTED_APPS.filter(_ != application.name.asInstanceOf[String])
+    } else {
+      LedgerConsoleInterface.SELECTED_APPS = LedgerConsoleInterface.SELECTED_APPS :+ application.name.asInstanceOf[String]
+    }
+    LedgerConsoleInterface.saveSelectedApps()
+  }
+
+  def installBatch(): Unit = {
+    val apps = getApplications().filter({(app) =>
+      LedgerConsoleInterface.SELECTED_APPS.contains(app.name)
+    })
+    if (apps.nonEmpty) {
+      val path = s"/old/apply/install/apps/${apps.map(_.identifier).mkString("/")}"
+      $location.path(path)
+      $route.reload()
+    }
+  }
+
+  def removeBatch(): Unit = {
+    val apps = getApplications().filter({(app) =>
+      LedgerConsoleInterface.SELECTED_APPS.contains(app.name)
+    })
+    if (apps.nonEmpty) {
+      val path = s"/old/apply/uninstall/apps/${apps.map(_.identifier).mkString("/")}"
+      $location.path(path)
+      $route.reload()
+    }
+  }
 
   override def onAfterRefresh(): Unit = {
     applications = apiService.applications.value.flatMap(_.toOption).getOrElse(js.Array())

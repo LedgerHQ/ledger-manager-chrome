@@ -147,7 +147,8 @@ object ApiService {
 
   @ScalaJSDefined
   trait App extends js.Object {
-
+    var name: String
+    var identifier: String
   }
 
   @ScalaJSDefined

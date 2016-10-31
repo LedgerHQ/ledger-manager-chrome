@@ -71,7 +71,8 @@ class OldApplyScriptController(val windowService: WindowService,
     }
   }
   val product = $routeParams("category")
-  val identifier = $routeParams("identifier")
+  val identifiers = $routeParams("identifiers").split("/")
+  val identifier = identifiers.head
   val script = $routeParams("script")
   var hasError = false
   val pkg = {
@@ -109,7 +110,9 @@ class OldApplyScriptController(val windowService: WindowService,
   def next(): Unit = {
     if (hasError == false && category == "firmwares")
       return
-    if (category == "apps") {
+    if (identifiers.length > 1) {
+      $location.path(s"/old/apply/$script/$category/${identifiers.drop(1).mkString("/")}")
+    } else if (category == "apps") {
       $location.path("/old/apps/index/")
     } else {
       $location.path("/old/firmwares/index/")
