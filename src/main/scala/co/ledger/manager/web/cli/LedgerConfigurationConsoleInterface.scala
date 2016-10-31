@@ -43,11 +43,13 @@ trait LedgerConfigurationConsoleInterface extends BaseConsoleInterface {
   def enableFactoryMode() = {
     _factoryMode = true
     preferences.edit().putBoolean("factory_mode", _factoryMode).commit()
+    reloadRoute()
   }
   @JSExport
   def disableFactoryMode() = {
     _factoryMode = false
     preferences.edit().putBoolean("factory_mode", _factoryMode).commit()
+    reloadRoute()
   }
   def isInFactoryMode = _factoryMode
 

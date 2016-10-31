@@ -34,4 +34,5 @@ import scala.scalajs.js
   */
 trait BaseConsoleInterface {
   def log(txt: js.Any): Unit = js.Dynamic.global.console.log(txt)
+  def reloadRoute() = js.Dynamic.global.angular.element("body").injector().get("$route").reload()
 }
