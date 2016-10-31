@@ -5,6 +5,7 @@ import java.util.Date
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.Service
 import co.ledger.manager.web.Application
+import co.ledger.manager.web.cli.LedgerConsoleInterface
 import co.ledger.manager.web.core.event.JsEventEmitter
 import co.ledger.manager.web.core.utils.UrlEncoder
 
@@ -118,6 +119,8 @@ class ApiService extends Service {
       "?provider=ledger"
     else if (!js.isUndefined(js.Dynamic.global.CUSTOM_PROVIDER) && js.Dynamic.global.CUSTOM_PROVIDER.toString.nonEmpty)
       s"?provider=${UrlEncoder.encode(js.Dynamic.global.CUSTOM_PROVIDER.toString)}"
+    else if (LedgerConsoleInterface.defaultProvider.isDefined)
+      s"?provider=${UrlEncoder.encode(LedgerConsoleInterface.defaultProvider.get)}"
     else
       ""
   }
