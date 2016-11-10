@@ -113,9 +113,9 @@ class OldApplyScriptController(val windowService: WindowService,
     if (identifiers.length > 1) {
       $location.path(s"/old/apply/$script/$category/${identifiers.drop(1).mkString("/")}")
     } else if (category == "apps") {
-      $location.path("/old/apps/index/")
+      $location.path("/old/apps/index")
     } else {
-      $location.path("/old/firmwares/index/")
+      $location.path("/old/firmwares/index")
     }
     $route.reload()
   }
