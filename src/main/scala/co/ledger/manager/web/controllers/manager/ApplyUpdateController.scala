@@ -9,7 +9,7 @@ import biz.enef.angulate.{Controller, Scope}
 import co.ledger.manager.web.Application
 import co.ledger.manager.web.core.filesystem.ChromeFileSystem
 import co.ledger.manager.web.core.utils.{PermissionsHelper, UrlEncoder}
-import co.ledger.manager.web.services.{DeviceService, WindowService}
+import co.ledger.manager.web.services.{ApiService, DeviceService, WindowService}
 import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
 import co.ledger.wallet.core.device.ethereum.LedgerApi
 import co.ledger.wallet.core.device.ethereum.LedgerCommonApiInterface.LedgerApiException
@@ -56,10 +56,11 @@ import scala.util.{Failure, Success}
   */
 class ApplyUpdateController(val windowService: WindowService,
                             deviceService: DeviceService,
-                            $scope: Scope,
+                            val $scope: Scope,
+                            val apiService: ApiService,
                             $route: js.Dynamic,
                             $location: Location,
-                            $routeParams: js.Dictionary[String]) extends Controller with ManagerController {
+                            $routeParams: js.Dictionary[String]) extends Controller with ManagerController with ApiDependantController {
 
 
   private val product = UrlEncoder.decode($routeParams("product"))
@@ -302,6 +303,7 @@ class ApplyUpdateController(val windowService: WindowService,
         setMode("error")
     }
   }
+
 
 }
 

@@ -92,6 +92,8 @@ object LedgerBolosApi {
         None
     }
 
+    def isOSU = version.contains("-osu")
+    def OSUVersion = version.replace("-osu", "")
     def compareVersion(stringVersion: String): Int = version.compare(stringVersion)
   }
 

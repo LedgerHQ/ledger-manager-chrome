@@ -5,12 +5,13 @@ import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.Location
 import biz.enef.angulate.ext.Route
 import co.ledger.manager.web.controllers.WindowController
-import co.ledger.manager.web.services.{DeviceService, SessionService, WindowService}
+import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 import co.ledger.wallet.core.device.{Device, DeviceFactory}
 import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
 import co.ledger.wallet.core.device.ethereum.LedgerApi
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.scalajs.js
 import scala.util.{Failure, Random, Success}
 
@@ -49,6 +50,7 @@ class LaunchController(val windowService: WindowService,
                        sessionService: SessionService,
                        $scope: Scope,
                        $route: js.Dynamic,
+                       apiService: ApiService,
                        $location: Location) extends Controller with ManagerController {
 
   private var _scanRequest: Option[ScanRequest] = None
@@ -74,13 +76,36 @@ class LaunchController(val windowService: WindowService,
     device.connect() flatMap { (_) =>
       LedgerApi(device).getFirmwareVersion()
     } flatMap {(version) =>
-      sessionService.startNewSessions(LedgerApi(device))
-    } onComplete {
-      case Success(_) =>
-        deviceService.registerDevice(device)
+      sessionService.startNewSessions(LedgerApi(device)) map {(_) =>
+        version
+      }
+    } flatMap {(version) =>
+
+      def defaultOpen() = {
         $location.path("/old/apps/index/")
         $route.reload()
-      case Failure(ex) =>
+        Future.successful(null)
+      }
+
+      if (version.isOSU) {
+        apiService.refresh() map {(_) =>
+          deviceService.registerDevice(device)
+          val identifier = apiService.firmwares.value.get.toOption flatMap {(firmwares) =>
+            firmwares.find(_.name == version.OSUVersion)
+          }
+          if (identifier.nonEmpty) {
+            $location.path(s"/old/apply/install/firmware/${identifier.get.identifier}")
+            $route.reload()
+          } else {
+            defaultOpen()
+          }
+        }
+      } else {
+        deviceService.registerDevice(device)
+        defaultOpen()
+      }
+    } onFailure {
+      case ex: Throwable =>
         startDeviceDiscovery()
     }
   }

@@ -133,6 +133,7 @@ class ApiService extends Service {
   def clearData(): Unit = {
     _applications = None
     _firmwares = None
+
   }
 
   def lastUpdateDate = _lastUpdateDate
@@ -156,7 +157,8 @@ object ApiService {
 
   @ScalaJSDefined
   trait Firmware extends js.Object {
-
+    var name: String
+    var identifier: String
   }
 
   @js.native
