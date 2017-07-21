@@ -1,4 +1,11 @@
 # Changelog
+1.0.2 (2017-07-21)
+==================
+
+- Fixing BytesReader.available()
+- Added MCU restoring tool
+
+
 1.0.1 (2016-10-31)
 ==================
 

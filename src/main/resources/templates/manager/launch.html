@@ -1,6 +1,9 @@
 <div class="launch-screen" ng-controller="LaunchController as ctrl">
-    <img src="images/icons/ic_grey_nanos_and_blue.png">
-    <h1 translate>launch.to_begin</h1>
-    <h2 translate>launch.if_asked_enter_pin</h2>
+    <img ng-hide = "ctrl.isFlashing" src="images/icons/ic_grey_nanos_and_blue.png">
+    <h1 ng-hide = "ctrl.isFlashing" translate>launch.to_begin</h1>
+    <h2 ng-hide = "ctrl.isFlashing" translate>launch.if_asked_enter_pin</h2>
+    <div ng-show = "ctrl.isFlashing" style="margin-bottom: 20px;" ><spinner></spinner></div>
+    <h1 ng-show = "ctrl.isFlashing" translate>launch.loading</h1>
+    <h2 ng-show = "ctrl.isFlashing" translate>launch.do_not_disconnect</h2>
     <a ng-click="ctrl.openHelpCenter()" translate>common.need_help</a>
 </div>

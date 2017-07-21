@@ -9,10 +9,14 @@ import co.ledger.manager.web.services.{DeviceService, SessionService, WindowServ
 import co.ledger.wallet.core.device.{Device, DeviceFactory}
 import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
 import co.ledger.wallet.core.device.ethereum.LedgerApi
+import co.ledger.wallet.core.device.ethereum.LedgerBolosApi.FirmwareVersion
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js
-import scala.util.{Failure, Random, Success}
+import scala.scalajs.js.Dynamic
+import scala.scalajs.js.timers.setTimeout
+import scala.util.{Failure, Random, Success, Try}
 
 /**
   *
@@ -49,57 +53,101 @@ class LaunchController(val windowService: WindowService,
                        sessionService: SessionService,
                        $scope: Scope,
                        $route: js.Dynamic,
+                       $routeParams: js.Dictionary[String],
                        $location: Location) extends Controller with ManagerController {
 
+  js.Dynamic.global.console.log(js.Dynamic.global.alreadyRouted)
+  if (js.isUndefined(js.Dynamic.global.alreadyRouted)) {
+    js.Dynamic.global.alreadyRouted = 0
+  } else {
+    js.Dynamic.global.alreadyRouted = js.Dynamic.global.alreadyRouted.asInstanceOf[Int] + 1
+  }
+  if (js.isUndefined(js.Dynamic.global.isFlashing)) {
+    js.Dynamic.global.isFlashing = false
+  }
+  var isFlashing: Boolean = js.Dynamic.global.isFlashing.asInstanceOf[Boolean]
   private var _scanRequest: Option[ScanRequest] = None
-
-  def startDeviceDiscovery(): Unit = {
-    if (_scanRequest.isEmpty) {
-      _scanRequest = Option(deviceService.requestScan())
-      _scanRequest.get.onScanUpdate {
-        case DeviceDiscovered(device) =>
-          if (_scanRequest.isDefined) {
-            connectDevice(device)
-            _scanRequest.get.stop()
-            _scanRequest = None
-          }
-        case DeviceLost(device) =>
+  if ( true /*js.Dynamic.global.alreadyRouted.asInstanceOf[Int] % 2 == 1*/) {
+    js.Dynamic.global.isFlashing = false
+    def startDeviceDiscovery(): Unit = {
+      if (_scanRequest.isEmpty) {
+        _scanRequest = Option(deviceService.requestScan())
+        _scanRequest.get.onScanUpdate {
+          case DeviceDiscovered(device) =>
+            if (_scanRequest.isDefined) {
+              connectDevice(device)
+              _scanRequest.get.stop()
+              _scanRequest = None
+            }
+          case DeviceLost(device) =>
+        }
+        _scanRequest.get.duration = DeviceFactory.InfiniteScanDuration
+        _scanRequest.get.start()
       }
-      _scanRequest.get.duration = DeviceFactory.InfiniteScanDuration
-      _scanRequest.get.start()
     }
-  }
 
-  def connectDevice(device: Device): Unit = {
-    device.connect() flatMap { (_) =>
-      LedgerApi(device).getFirmwareVersion()
-    } flatMap {(version) =>
-      sessionService.startNewSessions(LedgerApi(device))
-    } onComplete {
-      case Success(_) =>
-        deviceService.registerDevice(device)
-        $location.path("/old/apps/index/")
-        $route.reload()
-      case Failure(ex) =>
-        startDeviceDiscovery()
+    def connectDevice(device: Device): Unit = {
+      device.connect() flatMap {(_) =>
+        LedgerApi(device).needFix()
+      } flatMap  {(fixNeeded) =>
+        val promise = Promise[FirmwareVersion]()
+        if (fixNeeded) {
+          js.Dynamic.global.isFlashing = true
+          isFlashing = js.Dynamic.global.isFlashing.asInstanceOf[Boolean]
+          setTimeout(0){
+            $scope.$apply()
+          }
+          LedgerApi(device).getFirmwareVersion() map { (result) =>
+            LedgerApi(device).fixMcu() map { (_) =>
+              promise.success(result)
+            }
+          }
+        } else {
+          LedgerApi(device).getFirmwareVersion() map { (result) =>
+            promise.success(result)
+          }
+        }
+        promise.future
+      } flatMap {(version) =>
+        if (isFlashing){
+          js.Dynamic.global.isFlashing = false
+          isFlashing = js.Dynamic.global.isFlashing.asInstanceOf[Boolean]
+          setTimeout(0){
+            $scope.$apply()
+          }
+          println("failing")
+          Future.failed(new Exception("FLashed reset"))
+        } else {
+          println("start session")
+          sessionService.startNewSessions(LedgerApi(device))
+        }
+      } onComplete {
+        case Success(_) =>
+          deviceService.registerDevice(device)
+          $location.path("/old/apps/index/")
+          $route.reload()
+        case Failure(ex) =>
+          startDeviceDiscovery()
+      }
     }
-  }
 
-  def stopDeviceDiscovery(): Unit = {
-    _scanRequest foreach {(r) =>
-      r.stop()
-      _scanRequest = None
+    def stopDeviceDiscovery(): Unit = {
+      _scanRequest foreach {(r) =>
+        r.stop()
+        _scanRequest = None
+      }
     }
+
+    def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/help_center")
+
+    $scope.$on("$destroy", {() =>
+      stopDeviceDiscovery()
+    })
+
+    startDeviceDiscovery()
   }
-
-  def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/help_center")
-
-  $scope.$on("$destroy", {() =>
-    stopDeviceDiscovery()
-  })
-
-  startDeviceDiscovery()
 }
+
 
 object LaunchController {
   def init(module: RichModule) = module.controllerOf[LaunchController]("LaunchController")

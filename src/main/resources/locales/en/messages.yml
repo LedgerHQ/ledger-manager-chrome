@@ -40,6 +40,8 @@ left_panel:
 launch:
   to_begin: To begin, connect your Ledger Wallet.
   if_asked_enter_pin: If asked, enter your PIN code to unlock your device.
+  loading: Restoring MCU...
+  do_not_disconnect: Your device is being updated. Do not disconnect.
 
 old:
   common:

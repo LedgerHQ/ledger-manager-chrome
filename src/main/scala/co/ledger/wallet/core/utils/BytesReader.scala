@@ -95,7 +95,7 @@ class BytesReader(val bytes: Array[Byte], private val startOffset: Int, val leng
 
   def slice(offset: Int, size: Int): BytesReader = new BytesReader(bytes, offset, size)
 
-  def available: Int = bytes.length - _offset
+  def available: Int = length - _offset
 
   def apply(index: Int): Byte = bytes(index)
 }
