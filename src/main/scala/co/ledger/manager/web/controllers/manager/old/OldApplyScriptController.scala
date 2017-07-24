@@ -75,6 +75,8 @@ class OldApplyScriptController(val windowService: WindowService,
   val identifier = identifiers.head
   val script = $routeParams("script")
   var hasError = false
+  var scriptEndoint = "install"
+  var lastError = ""
   val pkg = {
     product match {
       case "osu" =>
@@ -113,9 +115,9 @@ class OldApplyScriptController(val windowService: WindowService,
     if (identifiers.length > 1) {
       $location.path(s"/old/apply/$script/$category/${identifiers.drop(1).mkString("/")}")
     } else if (category == "apps") {
-      $location.path("/old/apps/index/")
+      $location.path("/old/apps/index")
     } else {
-      $location.path("/old/firmwares/index/")
+      $location.path("/old/firmwares/index")
     }
     $route.reload()
   }
@@ -186,8 +188,6 @@ class OldApplyScriptController(val windowService: WindowService,
     }
   }
 
-  val endpoint = new StringWriter()
-  endpoint.append(s"/$script?")
   val params = {
     product match {
       case "osu" =>
@@ -197,10 +197,28 @@ class OldApplyScriptController(val windowService: WindowService,
       case other =>
         if (script == "install")
           pkg.app
-        else
+        else if (script == "uninstall" && pkg.app.asInstanceOf[js.Dictionary[js.Any]].contains("delete")) {
+          val app = pkg.app.asInstanceOf[js.Dictionary[js.Any]]
+          val finalPkg = js.Dynamic.literal(
+            firmware = app("delete"),
+            firmwareKey = app("deleteKey")
+          ).asInstanceOf[js.Dictionary[js.Any]]
+          app foreach {(keyValue) =>
+            if (!finalPkg.contains(keyValue._1)) {
+              finalPkg(keyValue._1) = keyValue._2
+            }
+          }
+          finalPkg
+        } else {
+          scriptEndoint = "uninstall"
           js.Dynamic.literal(appName = pkg.name, targetId = pkg.app.targetId)
+        }
     }
   }.asInstanceOf[js.Dictionary[js.Any]]
+
+  val endpoint = new StringWriter()
+  endpoint.append(s"/${scriptEndoint}?")
+
   var first = true
   params.foreach {
     case (k, v) =>
@@ -211,6 +229,7 @@ class OldApplyScriptController(val windowService: WindowService,
   }
 
   def applyScript(): Unit = {
+    lastError = ""
     Application.webSocketFactory.connect(endpoint.toString) flatMap {(socket) =>
       val promise = Promise[Unit]()
       socket.onJsonMessage({(message) =>
@@ -237,6 +256,10 @@ class OldApplyScriptController(val windowService: WindowService,
         next()
       case Failure(ex) =>
         ex.printStackTrace()
+        if (ex.getMessage.contains("6a80"))
+          lastError = "already_installed"
+        else if (ex.getMessage.contains("6a84") || ex.getMessage.contains("6a85"))
+          lastError = "no_space"
         hasError = true
         $scope.$digest()
     }

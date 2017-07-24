@@ -83,6 +83,7 @@ class ApiService extends Service {
     if (_firmwares.isEmpty) {
       _firmwares = Some(Application.httpClient.get("/firmwares" + queryString).json map {
         case (json, _) =>
+          println("json", json)
           _lastUpdateDate = Some(new Date())
           val deviceIdentifier = SessionService.instance.currentSession.get.device._1
           if (json.has(deviceIdentifier)) {
@@ -92,6 +93,7 @@ class ApiService extends Service {
             js.Array()
           }
       } map {(firmwares) =>
+        println("firmwares", firmwares)
         val version = SessionService.instance.currentSession.get.firmware
         firmwares.filter({(firmware) =>
           val dynamic = firmware.asInstanceOf[js.Dynamic]
@@ -104,6 +106,7 @@ class ApiService extends Service {
         eventEmitter.emit(UpdateDoneEvent())
       }
     }
+    println("last _firmwares", _firmwares)
     _firmwares.get
   }
 
@@ -133,6 +136,7 @@ class ApiService extends Service {
   def clearData(): Unit = {
     _applications = None
     _firmwares = None
+
   }
 
   def lastUpdateDate = _lastUpdateDate
@@ -156,7 +160,8 @@ object ApiService {
 
   @ScalaJSDefined
   trait Firmware extends js.Object {
-
+    var name: String
+    var identifier: String
   }
 
   @js.native

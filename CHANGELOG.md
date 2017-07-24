@@ -1,10 +1,16 @@
 # Changelog
-1.0.2 (2017-07-21)
+1.0.3 (2017-07-21)
 ==================
 
 - Fixing BytesReader.available()
 - Added MCU restoring tool
 
+1.0.2 (2017-02-24)
+=================
+
+- One click firmware update
+- Better error management
+- Better application uninstall script
 
 1.0.1 (2016-10-31)
 ==================

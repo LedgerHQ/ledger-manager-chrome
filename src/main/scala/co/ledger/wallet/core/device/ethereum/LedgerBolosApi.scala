@@ -42,7 +42,7 @@ trait LedgerBolosApi extends LedgerCommonApiInterface {
   import LedgerBolosApi._
 
   def needFix(): Future[Boolean] = {
-    println("need fix")
+    println("need fix called")
     sendApdu(0xE0, 0x01, 0x00, 0x00, 0x00, 0x00) map {(result) =>
       matchErrorsAndThrow(result)
       val version = new FirmwareVersion(result.data)
@@ -220,7 +220,6 @@ object LedgerBolosApi {
         None
     }
     if (reader.available <= 0) {
-
     }
     else {
       version = new String(reader.readNextBytes(reader.readNextByte()))
@@ -231,6 +230,8 @@ object LedgerBolosApi {
           None
       }
     }
+    def isOSU = version.contains("-osu")
+    def OSUVersion = version.replace("-osu", "")
     def compareVersion(stringVersion: String): Int = version.compare(stringVersion)
   }
 

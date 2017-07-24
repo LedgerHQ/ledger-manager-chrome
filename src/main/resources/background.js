@@ -32,9 +32,9 @@ function startApp() {
             id: "main_window",
             innerBounds: {
                 width: 650,
-                height: 560,
+                height: 600,
                 minWidth: 650,
-                minHeight: 560
+                minHeight: 600
             }
         }
     );

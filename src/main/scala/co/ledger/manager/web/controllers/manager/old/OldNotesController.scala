@@ -76,19 +76,19 @@ class OldNotesController(val windowService: WindowService,
   }
 
   def uninstall(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/uninstall/apps/${app.identifier.asInstanceOf[String]}/"
+    val path = s"/old/apply/uninstall/apps/${app.identifier.asInstanceOf[String]}"
     $location.path(path)
     $route.reload()
   }
 
   def installOsu(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/osu/${app.identifier.asInstanceOf[String]}/"
+    val path = s"/old/apply/install/osu/${app.identifier.asInstanceOf[String]}"
     $location.path(path)
     $route.reload()
   }
 
   def installFirmware(app: js.Dynamic): Unit = {
-    val path = s"/old/apply/install/firmware/${app.identifier.asInstanceOf[String]}/"
+    val path = s"/old/apply/install/firmware/${app.identifier.asInstanceOf[String]}"
     $location.path(path)
     $route.reload()
   }

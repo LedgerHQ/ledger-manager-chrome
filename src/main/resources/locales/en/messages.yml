@@ -37,6 +37,9 @@ left_panel:
   last_update: Last update
 
 
+firmware:
+  install: Install
+
 launch:
   to_begin: To begin, connect your Ledger Wallet.
   if_asked_enter_pin: If asked, enter your PIN code to unlock your device.
@@ -66,3 +69,5 @@ old:
     error_title_install_osu: Unable to install OS updater.
     error_title_install_firmware: Unable to install firmware.
     contact_support: If the problem persists, contact Ledger support.
+    error_no_space: Insufficient remaining space. Please uninstall some applications.
+    error_already_installed: The application is already installed. Please uninstall it first if you want to update your application.

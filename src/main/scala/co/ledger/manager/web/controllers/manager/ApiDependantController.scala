@@ -56,8 +56,11 @@ trait ApiDependantController {
 
   def refresh(): Unit = {
     onBeforeRefresh()
+
     _loading = !apiService.applications.isCompleted
+
     val startDate = new Date().getTime
+
     val applyUi = {() =>
       if (_loading) {
         import timers._

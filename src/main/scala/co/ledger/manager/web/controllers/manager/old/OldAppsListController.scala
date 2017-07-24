@@ -57,6 +57,8 @@ class OldAppsListController(val windowService: WindowService,
                             val apiService: ApiService) extends Controller
   with ManagerController with ApiDependantController {
 
+  println(" old controller")
+
   var applications = js.Array[ApiService.App]()
   var images = scala.collection.mutable.Map[String, js.Any]()
 
@@ -125,9 +127,11 @@ class OldAppsListController(val windowService: WindowService,
   }
 
   def removeBatch(): Unit = {
+    println(" before app")
     val apps = getApplications().filter({(app) =>
       LedgerConsoleInterface.SELECTED_APPS.contains(app.name)
     })
+    println("after apps")
     if (apps.nonEmpty) {
       val path = s"/old/apply/uninstall/apps/${apps.map(_.identifier).mkString("/")}"
       $location.path(path)
