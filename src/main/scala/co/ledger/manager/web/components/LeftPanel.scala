@@ -49,7 +49,7 @@ class LeftPanel( $location: Location,
                  $route: js.Dynamic,
                  $parse: js.Dynamic,
                  apiService: ApiService) extends Directive {
-  override def templateUrl: String = "/templates/components/left-panel.html"
+  override def templateUrl: String = "./templates/components/left-panel.html"
   override type ControllerType = js.Dynamic
   override type ScopeType = LeftPanel.LeftPanelScope
 
