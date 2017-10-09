@@ -152,7 +152,7 @@ class LaunchController(val windowService: WindowService,
     }
   }
 
-  def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/help_center")
+  def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/")
 
   $scope.$on("$destroy", {() =>
     stopDeviceDiscovery()
