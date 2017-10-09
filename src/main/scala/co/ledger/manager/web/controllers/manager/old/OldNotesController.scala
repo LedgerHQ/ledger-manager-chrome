@@ -96,7 +96,7 @@ class OldNotesController(val windowService: WindowService,
   def icon(name: String) =
     js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/ic_placeholder.png")
 
-  def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/help_center")
+  def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/")
 
   def toggleDevMode(): Unit = {
     SessionService.instance.currentSession.get.developerMode = !SessionService.instance.currentSession.get.developerMode
