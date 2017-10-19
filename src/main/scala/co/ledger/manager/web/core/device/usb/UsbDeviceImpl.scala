@@ -11,6 +11,7 @@ import co.ledger.manager.web.core.event.JsEventEmitter
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.scalajs.js
+import scala.scalajs.js.UndefOr
 
 /**
   *
@@ -44,7 +45,6 @@ import scala.scalajs.js
   */
 class UsbDeviceImpl(deviceInfo: HidDeviceInfo) extends Device {
   private val chrome = js.Dynamic.global.chrome
-
   private var _connectionPromise: Option[Promise[UsbDeviceImpl.Connection]] = None
   private var _exchanger: Option[UsbExchangePerformer] = None
   private val _emitter: EventEmitter = new JsEventEmitter
@@ -58,11 +58,15 @@ class UsbDeviceImpl(deviceInfo: HidDeviceInfo) extends Device {
   override def connect(): Future[Device] = {
     _connectionPromise.getOrElse({
       _connectionPromise = Option(Promise())
-      chrome.hid.connect(deviceInfo.deviceId, {(connection: UsbDeviceImpl.Connection) =>
-        _exchanger = Some(new UsbHidExchangePerformer(connection, _debug, true))
-        _connectionPromise.get.success(connection)
-        _emitter.emit(Connect(this))
-        chrome.hid.onDeviceRemoved.addListener(_callback)
+      chrome.hid.connect(deviceInfo.deviceId, { (connection: UndefOr[UsbDeviceImpl.Connection]) =>
+        if (connection.isDefined) {
+          _exchanger = Some(new UsbHidExchangePerformer(connection.get, _debug, true))
+          _connectionPromise.get.success(connection.get)
+          _emitter.emit(Connect(this))
+          chrome.hid.onDeviceRemoved.addListener(_callback)
+        } else {
+          _connectionPromise.get.failure(new Exception("error connecting"))
+        }
       })
       _connectionPromise.get
     }).future.map({(_) => this})
