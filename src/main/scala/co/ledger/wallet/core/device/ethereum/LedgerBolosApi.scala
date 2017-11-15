@@ -3,9 +3,12 @@ package co.ledger.wallet.core.device.ethereum
 import co.ledger.wallet.core.device.ethereum.LedgerCommonApiInterface.{LedgerApiException, LedgerApiUnknownErrorException}
 import co.ledger.wallet.core.utils.logs.Logger
 import co.ledger.wallet.core.utils.{BytesReader, HexUtils}
+import com.sun.net.httpserver.Authenticator.Failure
 
 import scala.concurrent.Future
 import scala.scalajs.js.timers._
+import scala.util
+import scala.util.Failure
 
 
 /**
@@ -51,6 +54,26 @@ trait LedgerBolosApi extends LedgerCommonApiInterface {
       } else {
         false
       }
+    }
+  }
+
+  def isClubcoin(): Future[Boolean] = {
+    println("testing if it is clubcoin device")
+    val clubcoinTestApdu: Array[String] = Array(
+      "e00400000431100002",
+      "e050000008e46c4c718bc87fb7",
+      "e05180008a4104c98ca09953472b36061e0e40c93d505234090efd74f1d7a293e828159a97711b33d18afc17ad156eaed99cf43b20e15d64af39a5513b4e3c5f4317e642702f05473045022100f1d2b834994a0c1f25ea20cf33e32bd06bcf7c424a02eee8f6969920e1e8c2b30220632d19bd30ab2076187878aeaa0f4d4804013279d016deca6693f37b4e507f43"
+    )
+    sendApdu(HexUtils.decodeHex(clubcoinTestApdu(0))) flatMap { (result) =>
+      sendApdu(HexUtils.decodeHex(clubcoinTestApdu(1))) map { (result2) =>
+        if (result2.sw == 0x9000) {
+          true
+        } else {
+          false
+        }
+      }
+    } recover {
+      case all => false
     }
   }
 
