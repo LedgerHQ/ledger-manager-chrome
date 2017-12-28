@@ -104,9 +104,22 @@ class LaunchController(val windowService: WindowService,
           }
         }
       } else {
-        println("notneeded")
-        LedgerApi(device).getFirmwareVersion() map { (result) =>
-          promise.success(result)
+        println("mcu update not needed")
+        LedgerApi(device).getFirmwareVersion() map { (version) =>
+          println("version")
+          println(version.version)
+          js.Dynamic.global.LedgerConsoleInterface().setDefaultProvider("")
+          if (version.version == "1.2") {
+            LedgerApi(device).isClubcoin() map { (clubcoin) =>
+              if (clubcoin) {
+                println("setting store for clubcoin")
+                js.Dynamic.global.LedgerConsoleInterface().setDefaultProvider("clubcoin")
+              }
+              promise.success(version)
+            }
+          } else {
+            promise.success(version)
+          }
         }
       }
       promise.future
@@ -141,6 +154,7 @@ class LaunchController(val windowService: WindowService,
       }
     } onFailure {
       case ex: Throwable =>
+        device.disconnect()
         startDeviceDiscovery()
     }
   }
