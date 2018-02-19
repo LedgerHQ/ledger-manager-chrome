@@ -6,6 +6,7 @@ import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.Service
 import co.ledger.manager.web.controllers.WindowController
 import co.ledger.manager.web.core.event.JsEventEmitter
+import co.ledger.manager.web.components.SnackBar.SnackBarInstance
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -108,6 +109,9 @@ class WindowService extends Service {
   private var _refreshHandler: Option[() => Future[Unit]] = None
 
   private var _windowController: WindowController = null
+
+  var configureSnackBar: (Int, String, String) => SnackBarInstance = (_, _, _) => null
+
 
   val eventEmitter = new JsEventEmitter
 

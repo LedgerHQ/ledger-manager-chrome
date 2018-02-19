@@ -7,6 +7,7 @@ import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
 import co.ledger.manager.web.Application
 import co.ledger.manager.web.cli.LedgerConsoleInterface
+import co.ledger.manager.web.components.SnackBar
 import co.ledger.manager.web.controllers.manager.{ApiDependantController, ManagerController}
 import co.ledger.manager.web.core.net.JQHttpClient
 import co.ledger.manager.web.core.utils.UrlEncoder
@@ -56,7 +57,7 @@ class OldAppsListController(val windowService: WindowService,
                                 $route: js.Dynamic,
                             val apiService: ApiService) extends Controller
   with ManagerController with ApiDependantController {
-
+  SnackBar.success("launch.to_begin", "launch.to_begin").show()
   println(" old controller")
 
   var applications = js.Array[ApiService.App]()

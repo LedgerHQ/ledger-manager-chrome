@@ -3,6 +3,7 @@ package co.ledger.manager.web.controllers
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.JQLite
 import biz.enef.angulate.{Controller, Scope}
+import co.ledger.manager.web.components.SnackBar
 import co.ledger.wallet.core.device.utils.EventReceiver
 import co.ledger.manager.web.services.WindowService
 
@@ -43,6 +44,7 @@ import scala.scalajs.js.timers
 class WindowController(windowService: WindowService, $scope: Scope, $element: JQLite, $document: JQLite) extends Controller with EventReceiver {
   import timers._
   var showNavigationBar = false
+
 
   // Disable backspace
   $document.on("keydown", {(e: js.Dynamic) =>

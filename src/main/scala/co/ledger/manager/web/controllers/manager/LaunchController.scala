@@ -5,6 +5,7 @@ import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.Location
 import biz.enef.angulate.ext.Route
 import co.ledger.manager.web.controllers.WindowController
+import co.ledger.manager.web.core.utils.ChromeGlobalPreferences
 import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 import co.ledger.wallet.core.device.{Device, DeviceFactory}
 import co.ledger.wallet.core.device.DeviceFactory.{DeviceDiscovered, DeviceLost, ScanRequest}
@@ -62,7 +63,7 @@ class LaunchController(val windowService: WindowService,
   }
   var isFlashing: Boolean = js.Dynamic.global.isFlashing.asInstanceOf[Boolean]
   private var _scanRequest: Option[ScanRequest] = None
-
+  
   def startDeviceDiscovery(): Unit = {
     println("device discovery")
     if (_scanRequest.isEmpty) {

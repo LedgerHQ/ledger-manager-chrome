@@ -35,5 +35,8 @@ import co.ledger.manager.web.services.WindowService
   */
 trait ManagerController {
   val windowService: WindowService
+  implicit val ws = windowService
+  windowService.showNavigationBar()
+
 
 }
