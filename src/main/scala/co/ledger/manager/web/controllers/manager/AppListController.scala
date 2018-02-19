@@ -4,6 +4,7 @@ import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.Location
 import biz.enef.angulate.{Controller, Scope}
 import co.ledger.manager.web.Application
+import co.ledger.manager.web.components.SnackBar
 import co.ledger.manager.web.core.utils.UrlEncoder
 import co.ledger.manager.web.services.{DeviceService, WindowService}
 
