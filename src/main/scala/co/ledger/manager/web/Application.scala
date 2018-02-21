@@ -46,6 +46,7 @@ object Application extends JSApp{
     Spinner.init(module)
     Selector.init(module)
     LeftPanel.init(module)
+    SnackBar.init(module)
 
     // Directives
     AsyncImageSource.init(module)

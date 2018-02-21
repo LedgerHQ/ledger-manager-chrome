@@ -46,7 +46,7 @@ import scala.util.{Failure, Success}
   */
 class AppListController(val windowService: WindowService,
                         deviceService: DeviceService,
-                        $scope: Scope,
+                        override val $scope: Scope,
                         $location: Location,
                         $route: js.Dynamic) extends Controller with ManagerController {
 

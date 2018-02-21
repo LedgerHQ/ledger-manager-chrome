@@ -1,5 +1,6 @@
 package co.ledger.manager.web.controllers.manager
 
+import biz.enef.angulate.Scope
 import co.ledger.manager.web.controllers.WindowController
 import co.ledger.manager.web.services.WindowService
 
@@ -35,6 +36,8 @@ import co.ledger.manager.web.services.WindowService
   */
 trait ManagerController {
   val windowService: WindowService
+  val $scope: Scope
+
   implicit val ws = windowService
   windowService.showNavigationBar()
 

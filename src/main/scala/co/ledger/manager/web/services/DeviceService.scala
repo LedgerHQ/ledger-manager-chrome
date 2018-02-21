@@ -48,7 +48,7 @@ import scala.scalajs.js.timers._
   * SOFTWARE.
   *
   */
-class DeviceService($location: Location,  $route: js.Dynamic, sessionService: SessionService) extends Service with DeviceManager[Any] {
+class DeviceService(val windowService: WindowService, $location: Location,  $route: js.Dynamic, sessionService: SessionService) extends Service with DeviceManager[Any] {
   import co.ledger.wallet.core.device.DeviceManager.ConnectivityTypes._
 
   override implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
@@ -83,6 +83,7 @@ class DeviceService($location: Location,  $route: js.Dynamic, sessionService: Se
       case Connect(_) =>
       case Disconnect(_) =>
         sessionService.stopCurrentSessions()
+        windowService.dismissSnackbar()
         $location.path("/launch/")
         $route.reload()
     }

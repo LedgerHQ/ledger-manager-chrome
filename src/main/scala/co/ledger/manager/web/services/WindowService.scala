@@ -111,6 +111,7 @@ class WindowService extends Service {
   private var _windowController: WindowController = null
 
   var configureSnackBar: (Int, String, String) => SnackBarInstance = (_, _, _) => null
+  var dismissSnackbar: () => Unit = () => ()
 
 
   val eventEmitter = new JsEventEmitter

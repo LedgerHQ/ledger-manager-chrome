@@ -62,7 +62,7 @@ class OldApplyScriptController(val windowService: WindowService,
                                $routeParams: js.Dictionary[String],
                                val apiService: ApiService) extends Controller
   with ManagerController with ApiDependantController {
-
+  windowService.dismissSnackbar()
   val category = {
     $routeParams("category") match {
       case "osu" => "firmwares"

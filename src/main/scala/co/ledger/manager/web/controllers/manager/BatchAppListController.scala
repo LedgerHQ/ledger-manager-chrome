@@ -45,7 +45,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class BatchAppListController(val windowService: WindowService,
                              deviceService: DeviceService,
-                             $scope: Scope,
+                             override val $scope: Scope,
                              $route: js.Dynamic,
                              $location: Location,
                              $routeParams: js.Dictionary[String]) extends Controller with ManagerController {

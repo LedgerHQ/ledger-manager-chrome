@@ -53,7 +53,7 @@ import scala.util.{Failure, Random, Success, Try}
 class LaunchController(val windowService: WindowService,
                        deviceService: DeviceService,
                        sessionService: SessionService,
-                       $scope: Scope,
+                       override val $scope: Scope,
                        $route: js.Dynamic,
                        apiService: ApiService,
                        $location: Location) extends Controller with ManagerController {

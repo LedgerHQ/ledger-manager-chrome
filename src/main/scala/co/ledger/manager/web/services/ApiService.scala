@@ -162,12 +162,19 @@ object ApiService {
   trait Firmware extends js.Object {
     var name: String
     var identifier: String
+
   }
 
   @js.native
   trait Device extends js.Object {
     val targetId: Int
     val name: String
+  }
+
+  implicit class RichFirmware(val self: Firmware) {
+    def isDevOnly: Boolean = {
+      self.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
+    }
   }
 
   def init(module: RichModule) = module.serviceOf[ApiService]("apiService")
