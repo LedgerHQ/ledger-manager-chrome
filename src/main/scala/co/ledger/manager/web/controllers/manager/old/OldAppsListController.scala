@@ -14,11 +14,14 @@ import co.ledger.manager.web.core.utils.UrlEncoder
 import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 import org.scalajs.dom.raw.XMLHttpRequest
 
+import scala.concurrent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.scalajs.js
+import scala.scalajs.js.timers.setTimeout
 import scala.scalajs.js.{JSON, timers}
 import scala.util.{Failure, Success}
+import co.ledger.manager.web.services.ApiService._
 
 /**
   *
@@ -52,16 +55,15 @@ import scala.util.{Failure, Success}
   */
 class OldAppsListController(val windowService: WindowService,
                                 deviceService: DeviceService,
-                            val $scope: Scope,
+                            override val $scope: Scope,
                                 $location: Location,
                                 $route: js.Dynamic,
                             val apiService: ApiService) extends Controller
   with ManagerController with ApiDependantController {
-  SnackBar.success("launch.to_begin", "launch.to_begin").show()
-  println(" old controller")
-
   var applications = js.Array[ApiService.App]()
   var images = scala.collection.mutable.Map[String, js.Any]()
+
+
 
   val isInFactoryMode = LedgerConsoleInterface.isInFactoryMode
 
@@ -83,17 +85,20 @@ class OldAppsListController(val windowService: WindowService,
     js.Array(Application.httpClient.baseUrl + s"/assets/icons/$name", "images/icons/ic_placeholder.png")
 
   def navigateNotes(identifier: String) = {
+    windowService.dismissSnackbar()
     $location.path(s"/old/notes/apps/$identifier/")
     $route.reload()
   }
 
   def install(app: js.Dynamic): Unit = {
     val path = s"/old/apply/install/apps/${app.identifier}"
+    windowService.dismissSnackbar()
     $location.path(path)
     $route.reload()
   }
 
   def uninstall(app: js.Dynamic): Unit = {
+    windowService.dismissSnackbar()
     val path = s"/old/apply/uninstall/apps/${app.identifier}"
     $location.path(path)
     $route.reload()
@@ -141,6 +146,11 @@ class OldAppsListController(val windowService: WindowService,
   }
 
   override def onAfterRefresh(): Unit = {
+    apiService.firmwares.value.flatMap(_.toOption).filter { (array) =>
+        array.exists(!_.isDevOnly)
+    } foreach { _ =>
+      SnackBar.success("New Firmware available", "A new firmware is available for your device").show()
+    }
     applications = apiService.applications.value.flatMap(_.toOption).getOrElse(js.Array())
   }
 
@@ -148,6 +158,9 @@ class OldAppsListController(val windowService: WindowService,
   override def isLoading(): Boolean = super.isLoading()
 
   refresh()
+
+
+
 }
 
 object OldAppsListController {

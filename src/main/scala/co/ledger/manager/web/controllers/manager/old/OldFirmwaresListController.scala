@@ -47,15 +47,15 @@ class OldFirmwaresListController(val windowService: WindowService,
                                      $route: js.Dynamic,
                                  val apiService: ApiService) extends Controller
   with ManagerController with ApiDependantController {
-
+  windowService.dismissSnackbar()
   var firmwares = js.Array[ApiService.Firmware]()
 
   def getFirmwares() = {
     firmwares.array.filter {(item) =>
       if (isInDevMode())
-        item.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
+        item.isDevOnly
       else
-        !item.asInstanceOf[js.Dictionary[js.Any]].dict.lift("developer").exists(_.asInstanceOf[Boolean] == true)
+        !item.isDevOnly
     }
   }
   def isEmpty() = getFirmwares().length == 0

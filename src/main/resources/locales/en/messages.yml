@@ -39,6 +39,7 @@ left_panel:
 
 firmware:
   install: Install
+  up_to_date: You already have the latest firmware installed
 
 launch:
   to_begin: To begin, connect your Ledger Wallet.

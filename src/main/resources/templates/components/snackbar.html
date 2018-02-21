@@ -1,5 +1,5 @@
-<div class="snackbar" ng-class="{success: isSuccess(), error: isError(), neutral: isNeutral()}" ng-click="dismiss()">
-    <img ng-src="{{icon()}}"/>
+<div class="snackbar" ng-class="{success: isSuccess(), error: isError(), neutral: isNeutral()}" ng-click="dismiss(true)">
+    <i class="fa fa-exclamation-triangle" ></i>
     <div>
         <h1>{{title()}}</h1>
         <h2>{{subtitle()}}</h2>

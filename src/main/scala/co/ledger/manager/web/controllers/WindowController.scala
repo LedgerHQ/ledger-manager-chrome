@@ -4,11 +4,13 @@ import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.core.JQLite
 import biz.enef.angulate.{Controller, Scope}
 import co.ledger.manager.web.components.SnackBar
+import co.ledger.manager.web.components.SnackBar.SnackBarScope
 import co.ledger.wallet.core.device.utils.EventReceiver
 import co.ledger.manager.web.services.WindowService
 
 import scala.scalajs.js
 import scala.scalajs.js.timers
+import scala.util.Try
 
 
 /**
@@ -55,6 +57,15 @@ class WindowController(windowService: WindowService, $scope: Scope, $element: JQ
 
   var isUiEnabled = true
 
+  windowService.configureSnackBar = {(mode: Int, title: String, subtitle: String) =>
+    _snackBarScope.create().mode(mode).title(title).subtitle(subtitle)
+  }
+
+  windowService.dismissSnackbar = {() =>
+      _snackBarScope.dismiss(false)
+    ()
+  }
+
   windowService.onUserInterfaceEnableChanged {(enable) =>
     isUiEnabled = enable
     setTimeout(0) {
@@ -70,6 +81,9 @@ class WindowController(windowService: WindowService, $scope: Scope, $element: JQ
     windowService.eventEmitter.unregister(this)
   })
   windowService.eventEmitter.register(this)
+
+  private val _snackBarScope = $element.find("> snackbar").scope().asInstanceOf[SnackBarScope]
+
 
 }
 

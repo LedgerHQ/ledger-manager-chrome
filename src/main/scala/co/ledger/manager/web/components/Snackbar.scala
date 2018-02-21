@@ -2,7 +2,7 @@ package co.ledger.manager.web.components
 
 import biz.enef.angulate.{Directive, Scope}
 import biz.enef.angulate.Module.RichModule
-import biz.enef.angulate.core.{Attributes, JQLite}
+import biz.enef.angulate.core.{Attributes, JQLite, Location}
 import co.ledger.manager.web.components.SnackBar.{SnackBarInstance, SnackBarScope}
 import co.ledger.manager.web.core.utils.JQueryHelper
 import co.ledger.manager.web.services.WindowService
@@ -42,7 +42,9 @@ import scala.scalajs.js.annotation.ScalaJSDefined
   * SOFTWARE.
   *
   */
-class SnackBar($translate: js.Dynamic) extends Directive {
+class SnackBar($location: Location,
+               $route: js.Dynamic,
+               $translate: js.Dynamic) extends Directive {
   import SnackBar._
   import scala.scalajs.js.timers._
   override def templateUrl: String = "templates/components/snackbar.html"
@@ -60,31 +62,32 @@ class SnackBar($translate: js.Dynamic) extends Directive {
     scope.title = () => tr(Option(currentInstance).map(_.title).getOrElse(""))
     scope.subtitle = () => tr(Option(currentInstance).map(_.subtitle).getOrElse(""))
     scope.icon = () => Icons(Option(currentInstance).map(_.mode).getOrElse(0))
-    scope.dismiss = {() =>
-      element.animate(js.Dictionary("bottom" -> -element.outerHeight(false)), 400, "default", () => {
-        currentInstance = null
-      })
-      ()
+    scope.dismiss = { (redirect: Boolean) =>
+      if (currentInstance != null) {
+        element.animate(js.Dictionary("bottom" -> -element.outerHeight(false)), 400, "default", () => {
+          currentInstance = null
+        })
+        if (redirect == true && $location.path() != "/old/firmwares/index/") {
+          $location.path("/old/firmwares/index/")
+          $route.reload()
+        }
+        ()
+      }
     }
+
     show = (a: Any) => {
       currentInstance = a.asInstanceOf[SnackBarInstance]
       var timeout: js.Any = null
       currentInstance.dismissHandler = () => {
         if (currentInstance == a)
-          scope.dismiss()
+          scope.dismiss(false)
       }
       setTimeout(0) {
         scope.$digest()
         element.css("bottom", -element.outerHeight(false))
         JQueryHelper.injectCustomEasings()
         element.animate(js.Dictionary("bottom" -> 0), 400, "default", () => {
-          if (currentInstance != null) {
-            timeout = setTimeout(currentInstance.delay.toMillis) {
-              if (currentInstance != null)
-                currentInstance.dismissHandler()
-            }
-          }
-        })
+          })
       }
       ()
     }
@@ -163,7 +166,7 @@ object SnackBar {
     private var _mode = 0
     private var _title = ""
     private var _subtitle = ""
-    private var _delay: Duration = 3.seconds
+    private var _delay: Duration = 10.seconds
   }
 
   @js.native
@@ -175,6 +178,6 @@ object SnackBar {
     var title: js.Function0[String] = js.native
     var subtitle: js.Function0[String] = js.native
     var icon: js.Function0[String] = js.native
-    var dismiss: js.Function0[Unit] = js.native
+    var dismiss: js.Function1[Boolean, Unit] = js.native
   }
 }
