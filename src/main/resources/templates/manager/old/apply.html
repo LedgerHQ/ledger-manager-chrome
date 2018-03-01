@@ -38,6 +38,8 @@
         <p ng-if="ctrl.lastError == ''" translate>old.apply.contact_support</p>
         <p ng-if="ctrl.lastError == 'already_installed'" translate>old.apply.error_already_installed</p>
         <p ng-if="ctrl.lastError == 'no_space'" translate>old.apply.error_no_space</p>
+        <p ng-if="ctrl.lastError == 'lib_dependency' && ctrl.script == 'install'" translate>old.apply.error_lib_dependency_install</p>
+        <p ng-if="ctrl.lastError == 'lib_dependency' && ctrl.script == 'uninstall'" translate>old.apply.error_lib_dependency_uninstall</p>
         <div class="actions">
             <lbutton text="logs" type="cancel" ng-click="ctrl.exportLogs()"></lbutton>
             <lbutton text="Continue" ng-click="ctrl.next()"></lbutton>
