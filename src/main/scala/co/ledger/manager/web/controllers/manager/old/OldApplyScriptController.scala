@@ -91,7 +91,7 @@ class OldApplyScriptController(val windowService: WindowService,
   println(identifier)
 
   def ellipsize(text: String): String = {
-    text.substring(0, 4) + "..." + text.substring(text.length - 4, text.length)
+    (text.substring(0, 4) + "..." + text.substring(text.length - 4, text.length)).toUpperCase()
   }
 
   def exportLogs() = {
@@ -260,6 +260,8 @@ class OldApplyScriptController(val windowService: WindowService,
           lastError = "already_installed"
         else if (ex.getMessage.contains("6a84") || ex.getMessage.contains("6a85"))
           lastError = "no_space"
+        else if (ex.getMessage.contains("6a83"))
+          lastError = "lib_dependency"
         hasError = true
         $scope.$digest()
     }
