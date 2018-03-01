@@ -7,6 +7,7 @@ import co.ledger.manager.web.core.remarkable.Remarkable
 
 import scala.scalajs.js
 import scala.scalajs.js.Dictionary
+import org.scalajs.jquery.JQuery
 
 /**
   *
@@ -48,6 +49,10 @@ class MarkDown($compile: js.Dynamic) extends Directive {
   override def postLink(scope: ScopeType, element: JQLite, attrs: Attributes): Unit = {
     def apply(content: String): Unit = {
       element.html(remarkable.render(content))
+      element.find("a").asInstanceOf[JQuery].click({ e: js.Dynamic =>
+        e.preventDefault()
+        js.Dynamic.global.open(e.target.href)
+      })
       $compile(element.contents())(scope)
     }
 
