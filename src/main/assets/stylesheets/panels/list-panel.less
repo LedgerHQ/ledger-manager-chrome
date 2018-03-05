@@ -173,6 +173,9 @@
         font-weight: @font-weight-regular;
         font-size: @font-size-medium;
         color: @color-black;
+        > a {
+            color: @color-dark-grey;
+        }
       }
 
       > ol {
@@ -193,6 +196,24 @@
         }
 
       }
+
+      > ul {
+         margin-top: 10px;
+
+         > li {
+           font-weight: @font-weight-regular;
+           line-height: 18px;
+           font-size: @font-size-medium;
+           margin-left: 30px;
+           color: @color-dark-grey;
+           list-style-type: disc;
+         }
+
+         > li:first-child {
+           margin-top: 0;
+         }
+
+       }
 
     }
 
