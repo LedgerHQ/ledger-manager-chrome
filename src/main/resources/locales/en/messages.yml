@@ -72,5 +72,5 @@ old:
     contact_support: If the problem persists, contact Ledger support.
     error_no_space: Insufficient remaining space. Please uninstall some applications.
     error_already_installed: The application is already installed. Please uninstall it first if you want to update your application.
-    error_lib_dependency_uninstall: You cannot uninstall the bitcoin app if other altcoins app are still installed
+    error_lib_dependency_uninstall: You cannot uninstall the bitcoin app if other altcoin apps are still installed
     error_lib_dependency_install: You first need to install the bitcoin app
