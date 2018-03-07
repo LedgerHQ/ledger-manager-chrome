@@ -142,6 +142,7 @@ class LaunchController(val windowService: WindowService,
       }
     } onFailure {
       case ex: Throwable =>
+        device.disconnect()
         startDeviceDiscovery()
     }
   }
