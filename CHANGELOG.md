@@ -1,4 +1,8 @@
 # Changelog
+1.1.1 (2018-03-06)
+==================
+- Filtering devices by usage page
+
 1.1.0 (2018-03-05)
 ==================
 - Better release notes
