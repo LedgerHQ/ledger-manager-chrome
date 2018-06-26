@@ -1,4 +1,8 @@
 # Changelog
+1.2.0 (2018-06-26)
+==================
+- MCU update
+
 1.1.1 (2018-03-06)
 ==================
 - Filtering devices by usage page
