@@ -3,6 +3,7 @@ package co.ledger.manager.web.controllers.manager
 import biz.enef.angulate.Module.RichModule
 import biz.enef.angulate.{Controller, Scope}
 import biz.enef.angulate.core.Location
+import co.ledger.manager.web.core.utils.ChromeGlobalPreferences
 import co.ledger.manager.web.services.{ApiService, DeviceService, SessionService, WindowService}
 
 import scala.scalajs.js
@@ -24,6 +25,9 @@ class LedgerLiveController(val windowService: WindowService,
                            $location: Location)
   extends Controller with ManagerController {
 
+  val CounterName = "counter_1"
+  val CounterGoal = 2
+
   def download(): Unit = js.Dynamic.global.open("http://ledger.com/live")
 
   def continue(): Unit = {
@@ -33,6 +37,12 @@ class LedgerLiveController(val windowService: WindowService,
 
   def openHelpCenter(): Unit = js.Dynamic.global.open("http://support.ledgerwallet.com/")
 
+  private val prefs = new ChromeGlobalPreferences("ledger_live")
+
+  if (prefs.int(CounterName).exists(_ >= CounterGoal))
+    continue()
+  else
+    prefs.edit().putInt(CounterName, 1 + prefs.int(CounterName).getOrElse(0)).commit()
 
 }
 
