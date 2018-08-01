@@ -37,6 +37,7 @@ object Routes {
   def declare($routeProvider: RouteProvider) = {
     $routeProvider
       .when("/launch/", Route(templateUrl = "./templates/manager/launch.html"))
+      .when("/go/live", Route(templateUrl = "./templates/manager/go_live.html"))
       .when("/applist/", Route(templateUrl = "./templates/manager/app_list.html"))
       .when("/batchapplist/", Route(templateUrl = "./templates/manager/batch_app_list.html"))
       .when("/apply/:script/:product/:name/:params", Route(templateUrl = "./templates/manager/apply_update.html"))

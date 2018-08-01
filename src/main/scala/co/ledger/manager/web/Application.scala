@@ -9,7 +9,7 @@ import biz.enef.angulate.ext.RouteProvider
 import co.ledger.manager.web.components._
 import co.ledger.manager.web.controllers.WindowController
 import co.ledger.manager.web.controllers.manager.old.{OldApplyScriptController, OldAppsListController, OldFirmwaresListController, OldNotesController}
-import co.ledger.manager.web.controllers.manager.{AppListController, ApplyUpdateController, BatchAppListController, LaunchController}
+import co.ledger.manager.web.controllers.manager._
 import co.ledger.manager.web.core.net.{JQHttpClient, JsWebSocketFactory}
 import co.ledger.manager.web.core.utils.ChromePreferences
 import co.ledger.manager.web.directives.{AsyncImageSource, MarkDown}
@@ -58,6 +58,7 @@ object Application extends JSApp{
     AppListController.init(module)
     BatchAppListController.init(module)
     ApplyUpdateController.init(module)
+    LedgerLiveController.init(module)
 
     OldAppsListController.init(module)
     OldFirmwaresListController.init(module)

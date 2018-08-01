@@ -118,7 +118,7 @@ class LaunchController(val windowService: WindowService,
     } flatMap {(version) =>
 
       def defaultOpen() = {
-        $location.path("/old/apps/index/")
+        $location.path("/go/live")
         $route.reload()
         Future.successful(null)
       }
